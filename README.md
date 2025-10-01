@@ -95,13 +95,48 @@ Sau đó tùy biến code để thêm UI học tập, nhắc lịch, quản lý 
 
 ---
 
-## 🖥️ Kiến trúc phần mềm
+## 💾 Quản lý thẻ SD
 
-* **LVGL UI** – hiển thị lịch, bài học, báo cáo, biểu cảm.
-* **WebUI (HTTP Server)** – upload JSON (giáo trình, timetable, schedule).
-* **AI backend** – DeepSeek/Qwen/OpenAI (ASR, TTS, quiz generator, feedback).
-* **MQTT client** – kết nối Smarthome/Home Assistant.
-* **Data Manager** – đọc/ghi dữ liệu trên SD.
+### 1. Khi **không phát hiện SD card**
+
+* Hiển thị popup: *“⚠️ Vui lòng gắn thẻ SD để sử dụng đầy đủ tính năng học tập & lưu trữ dữ liệu.”*
+* Giọng nói thông báo tương tự.
+* Chỉ chạy chế độ tối giản: đồng hồ, thời tiết, biểu cảm cơ bản, smarthome MQTT (nếu có cấu hình).
+
+### 2. Khi **cắm SD card lần đầu**
+
+* Tự động tạo các thư mục hệ thống:
+
+  ```
+  /profiles/
+  /profiles/images/
+  /progress/
+  /learning/
+  /music/
+  /system/
+  ```
+* Sinh file mặc định:
+
+  * `config.json` (WiFi, MQTT, AI backend).
+  * `timetable.json` (rỗng).
+  * `curriculum.json` (mẫu).
+  * `lessons/` (chứa vài bài demo).
+
+### 3. Khi **SD card có dữ liệu cũ**
+
+* Đọc file cấu hình & dữ liệu.
+* Nếu thiếu thư mục/file → bổ sung.
+* Nếu file hỏng → tạo lại file mặc định và thông báo: *“Một số file bị lỗi, MiMi đã tạo lại file mặc định.”*
+
+### 4. Lưu trữ dữ liệu
+
+* **Tiến trình học**: `/profiles/<user>/progress/`.
+* **Ảnh profile**: `/profiles/images/<user>.jpg`.
+* **Giáo trình**: `/learning/curriculum.json`.
+* **Nhạc**: `/music/`.
+* **Cấu hình hệ thống**: `/system/config.json`.
+
+👉 Mọi dữ liệu load theo nhu cầu, tránh chiếm RAM.
 
 ---
 
@@ -184,27 +219,44 @@ Sau đó tùy biến code để thêm UI học tập, nhắc lịch, quản lý 
 
 ---
 
-## 🖼️ UI & Workflow
+## 🖼️ Thiết kế giao diện người dùng
 
-### Nhắc lịch (popup)
+### 1. Trang **Biểu cảm MiMi**
 
-* Icon môn học + nội dung: *“Đã đến giờ học Tiếng Anh – 20 phút”*.
-* Nút: ✅ Bắt đầu | ⏰ Hoãn | ❌ Bỏ qua.
-* Voice: “OK MiMi, bắt đầu.”
+* Hiển thị khuôn mặt MiMi (emoji-style): 😀 vui, 😐 bình thường, 😴 buồn ngủ, 😡 cảnh báo.
+* Nút cảm ứng: 🔊 bật/tắt giọng nói, ⚙️ vào Setting.
 
-### Học lý thuyết
+### 2. Trang **Đồng hồ + Thời tiết**
 
-* Hiển thị flashcard, quiz.
-* Người dùng trả lời (bấm chọn hoặc nói).
-* MiMi phản hồi đúng/sai, giải thích.
+* Hiển thị giờ, ngày, thời tiết (icon + nhiệt độ).
+* Nút: 📅 mở lịch, 🔄 refresh thời tiết, 🎶 bật nhạc nhanh.
 
-### Làm bài tập thực hành
+### 3. Trang **Lịch + Thời khóa biểu**
 
-* MiMi bật timer.
-* Người dùng bấm “Đã hoàn thành”.
-* MiMi hỏi: *“Bạn có muốn mình kiểm tra lại để chắc chắn đã hiểu bài không?”*
-* Nếu có → quiz/vấn đáp AI-generated.
-* Kết quả được lưu vào progress.
+* Hiển thị lịch tháng + lịch trình trong ngày.
+* Nút: ➕ thêm lịch, ✏️ chỉnh sửa, ❌ xóa.
+* Popup reminder: ✅ Bắt đầu | ⏰ Hoãn | ❌ Bỏ qua.
+
+### 4. Trang **Học + Tập**
+
+* **Học lý thuyết**: flashcard, quiz, nút ▶️ nghe phát âm, ✅ trả lời, 🔄 thử lại.
+* **Thực hành**: timer, nút “Đã hoàn thành”, popup gợi ý kiểm tra lại.
+
+### 5. Trang **Setting (Cấu hình)**
+
+* Cấu hình: WiFi, MQTT, chọn AI backend, quản lý profile, quản lý SD.
+* Nút: 💾 lưu, 🔄 reset.
+
+### 6. Trang **Báo cáo học tập**
+
+* Biểu đồ cột + tròn (tiến trình, điểm số).
+* Danh sách lỗi phổ biến.
+* Nút: 📤 xuất báo cáo, 🔍 chọn thành viên.
+
+### 7. Trang **Trình phát nhạc**
+
+* Playlist từ SD + online, hiển thị bài hát đang phát.
+* Nút: ⏮️ | ▶️ | ⏭️, 🔊 volume, 🎵 chọn playlist.
 
 ---
 
@@ -212,12 +264,42 @@ Sau đó tùy biến code để thêm UI học tập, nhắc lịch, quản lý 
 
 * Hồ sơ riêng cho từng thành viên: `/profiles/father/`, `/profiles/mother/`, `/profiles/sister/`, `/profiles/brother/`.
 * Profile chứa lịch học, timetable, progress riêng.
+* Hỗ trợ ảnh profile trong `/profiles/images/`.
 * Cha mẹ có thể hỏi:
 
   * “MiMi, báo cáo tình hình học của Nam tuần này.”
   * “Lan có hoàn thành bài tập hôm nay không?”
 
 ---
+
+## 📈 Roadmap ToDo
+
+### Giai đoạn 1 – Cơ bản
+
+* [ ] Cấu hình phần cứng (LCD, Touch, Loa, Mic, SD).
+* [ ] WebUI upload JSON.
+* [ ] UI Home + Reminder popup.
+* [ ] Flashcard + quiz offline.
+* [ ] Lưu progress.
+
+### Giai đoạn 2 – Thông minh
+
+* [ ] Tích hợp AI backend (ASR/TTS, quiz generator).
+* [ ] Cá nhân hóa nhiều người dùng.
+* [ ] Báo cáo học tập cho cha mẹ.
+* [ ] Trả bài sau khi học hoặc làm bài tập.
+* [ ] Phát nhạc theo ngữ cảnh.
+* [ ] Smarthome MQTT.
+
+### Giai đoạn 3 – Robot mở rộng
+
+* [ ] ESP32-CAM tuần tra.
+* [ ] Nhận diện khuôn mặt, cảnh báo người lạ.
+* [ ] CYD gắn lên robot làm mặt biểu cảm.
+
+---
+
+
 
 ## 📈 Roadmap ToDo
 
