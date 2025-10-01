@@ -272,33 +272,6 @@ Sau đó tùy biến code để thêm UI học tập, nhắc lịch, quản lý 
 
 ---
 
-## 📈 Roadmap ToDo
-
-### Giai đoạn 1 – Cơ bản
-
-* [ ] Cấu hình phần cứng (LCD, Touch, Loa, Mic, SD).
-* [ ] WebUI upload JSON.
-* [ ] UI Home + Reminder popup.
-* [ ] Flashcard + quiz offline.
-* [ ] Lưu progress.
-
-### Giai đoạn 2 – Thông minh
-
-* [ ] Tích hợp AI backend (ASR/TTS, quiz generator).
-* [ ] Cá nhân hóa nhiều người dùng.
-* [ ] Báo cáo học tập cho cha mẹ.
-* [ ] Trả bài sau khi học hoặc làm bài tập.
-* [ ] Phát nhạc theo ngữ cảnh.
-* [ ] Smarthome MQTT.
-
-### Giai đoạn 3 – Robot mở rộng
-
-* [ ] ESP32-CAM tuần tra.
-* [ ] Nhận diện khuôn mặt, cảnh báo người lạ.
-* [ ] CYD gắn lên robot làm mặt biểu cảm.
-
----
-
 
 
 ## 📈 Roadmap ToDo
