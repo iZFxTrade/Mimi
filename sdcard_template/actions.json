@@ -1,0 +1,13 @@
+[
+  {
+    "voice_command": "tạo ảnh",
+    "method": "POST",
+    "url": "https://api.your-n8n.com/webhook/generate-image",
+    "body_template": "{\"prompt\": \"{data}\"}"
+  },
+  {
+    "voice_command": "đọc báo",
+    "method": "GET",
+    "url": "https://api.your-news.com/latest-news"
+  }
+]

@@ -1,0 +1,28 @@
+{
+  "title": "Bài 1: Các hành tinh trong Hệ Mặt Trời",
+  "subject": "Thiên văn học",
+  "objective": "Nhận biết và nhớ tên 8 hành tinh.",
+  "activities": [
+    {
+      "type": "lecture",
+      "content": "Hôm nay chúng ta sẽ tìm hiểu về các hành tinh trong hệ mặt trời của chúng ta. Có tất cả 8 hành tinh, bắt đầu từ Sao Thủy, gần Mặt Trời nhất."
+    },
+    {
+      "type": "flashcard",
+      "cards": [
+        {"front": "Hành tinh lớn nhất?", "back": "Sao Mộc"},
+        {"front": "Hành tinh có vành đai rõ nhất?", "back": "Sao Thổ"}
+      ]
+    },
+    {
+      "type": "quiz",
+      "questions": [
+        {
+          "question": "Hành tinh nào được gọi là 'Hành tinh Đỏ'?",
+          "options": ["Sao Kim", "Sao Hỏa", "Sao Mộc"],
+          "answer": "Sao Hỏa"
+        }
+      ]
+    }
+  ]
+}

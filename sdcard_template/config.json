@@ -1,0 +1,8 @@
+
+{
+  "wifi_ssid": "Your_SSID",
+  "wifi_password": "Your_Password",
+  "mqtt_server": "your_mqtt_broker_ip",
+  "telegram_bot_token": "Your_Bot_Token",
+  "telegram_chat_id": "Your_Chat_ID"
+}

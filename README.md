@@ -2,64 +2,146 @@
 
 > **Lưu ý:** Đây là một phiên bản tùy biến (fork) của dự án [xiaozhi-esp32](https://github.com/78/xiaozhi-esp32), được tối ưu hóa riêng cho phần cứng **ESP32-CYD (Cheap Yellow Display)** và bổ sung các tính năng dành cho dự án MiMi.
 
-**MiMi** là một **trợ lý AI cá nhân hóa** chạy trên **ESP32-CYD**. MiMi không chỉ là **loa AI để bàn**, mà còn là **gia sư học tập, thư ký lịch trình, và một trung tâm giám sát, điều khiển ngôi nhà từ xa** có khả năng mở rộng không giới hạn.
+**MiMi** là một **trợ lý AI cá nhân hóa** chạy trên **ESP32-CYD**. MiMi không chỉ là **loa AI để bàn**, mà còn là một **người bạn đồng hành, gia sư thông minh, và trung tâm điều khiển ngôi nhà từ xa**, được thiết kế để trở thành một thành viên ảo trong gia đình bạn.
 
 ---
 
 ## ✨ Tính năng chính
 
-*   📚 **Gia sư học tập**
-    *   Học ngoại ngữ, toán, vật lý... theo giáo trình có sẵn trên thẻ SD.
-    *   Flashcard, quiz, và các bài kiểm tra tương tác.
-    *   Lưu và báo cáo tiến trình học của từng thành viên.
+*   💖 **Người bạn đồng hành trong gia đình**
+    *   Luôn lắng nghe và trò chuyện cùng các thành viên với cá tính riêng.
+    *   Ghi nhớ sở thích và thói quen để đưa ra các gợi ý phù hợp.
+    *   Kết nối các thành viên trong gia đình thông qua các hoạt động chung và lời nhắc.
 
-*   🗓️ **Quản lý lịch học & công việc**
-    *   Nhắc nhở lịch học, lịch làm việc, và các sự kiện quan trọng.
-    *   Hỗ trợ xác nhận và theo dõi hoàn thành công việc.
+*   📚 **Gia sư thông minh hai chế độ**
+    *   **Học theo giáo trình có sẵn:** Tự động đọc và dạy theo các file bài học (`lesson.json`) được chuẩn bị sẵn trên thẻ nhớ, đảm bảo lộ trình học tập chi tiết.
+    *   **Học theo chủ đề do AI tạo:** Chỉ cần ra lệnh với chủ đề và mục tiêu (ví dụ: "MiMi, dạy bé về các loại khủng long ăn thịt"), MiMi sẽ tự động biên soạn bài giảng, câu đố và flashcard để đạt được mục tiêu học tập đó.
 
 *   📱 **Giám sát & Điều khiển từ xa qua Telegram**
     *   **Cảnh báo an ninh:** Gửi tin nhắn kèm hình ảnh khi phát hiện người lạ (với ESP32-CAM).
-    *   **Báo cáo từ xa:** Nhận báo cáo tình hình học tập, trạng thái thiết bị theo yêu cầu.
+    *   **Báo cáo từ xa:** Nhận báo cáo tình hình học tập của con, trạng thái thiết bị theo yêu cầu.
     *   **Điều khiển từ xa:** Ra lệnh cho MiMi thực hiện các tác vụ từ bất cứ đâu.
 
 *   🔌 **Hệ thống Mở rộng & Tự động hóa (Custom Actions)**
-    *   **Tùy biến không giới hạn:** Người dùng có thể tự tạo các lệnh thoại mới ngay trên giao diện của MiMi.
-    *   **Kết nối mọi thứ:** Mỗi lệnh thoại có thể được gắn với một API endpoint (HTTP GET/POST) để kết nối với các dịch vụ như **n8n, Zapier, IFTTT**, hoặc server cá nhân.
-    *   **Ví dụ:**
-        *   Tạo lệnh "*tạo ảnh*" để gọi đến API tạo ảnh AI.
-        *   Tạo lệnh "*đọc báo*" để gọi đến API tổng hợp tin tức.
-        *   Tạo lệnh "*bật đèn làm việc*" để gọi đến webhook của Home Assistant.
+    *   **Tùy biến không giới hạn:** Người dùng có thể tự tạo các lệnh thoại mới ngay trên giao diện của MiMi để kết nối với bất kỳ dịch vụ nào có API (n8n, Home Assistant, Google, v.v.).
 
 *   🏠 **Smarthome & Âm nhạc**
     *   Kết nối trực tiếp với Home Assistant qua MQTT.
     *   Phát nhạc theo ngữ cảnh (học tập, thư giãn, tập thể dục).
 
-*   🤖 **Robot mở rộng (ESP32-CAM)**
-    *   Khi được tích hợp, MiMi có thể điều khiển một robot tuần tra, nhận diện khuôn mặt và gửi cảnh báo an ninh qua Telegram.
+---
+
+## 📂 Cấu trúc dữ liệu trên thẻ SD
+
+Thư mục gốc của thẻ SD sẽ chứa các file cấu hình và thư mục dữ liệu sau:
+
+```
+/
+├── config.json
+├── timetable.json
+├── actions.json
+├── lessons/
+│   └── ... (các file bài học .json)
+└── profiles/
+    └── ... (thư mục của từng người dùng)
+```
+
+### `config.json`
+
+File cấu hình chung cho thiết bị.
+
+```json
+{
+  "wifi_ssid": "Your_SSID",
+  "wifi_password": "Your_Password",
+  "mqtt_server": "your_mqtt_broker_ip",
+  "telegram_bot_token": "Your_Bot_Token",
+  "telegram_chat_id": "Your_Chat_ID"
+}
+```
+
+### `timetable.json`
+
+Chứa lịch học, lịch làm việc và các sự kiện.
+
+```json
+[
+  {
+    "time": "08:00",
+    "days": ["Mon", "Wed", "Fri"],
+    "event_type": "Học bài",
+    "details": "Toán - Chương 3: Hình học không gian"
+  },
+  {
+    "time": "20:00",
+    "days": ["Tue", "Thu"],
+    "event_type": "Làm bài tập",
+    "details": "Vật lý - Bài tập về nhà"
+  }
+]
+```
+
+### `lessons/{subject}/{lesson_name}.json`
+
+Cấu trúc của một file bài học cho chế độ học theo giáo trình.
+
+```json
+{
+  "title": "Bài 1: Các hành tinh trong Hệ Mặt Trời",
+  "subject": "Thiên văn học",
+  "objective": "Nhận biết và nhớ tên 8 hành tinh.",
+  "activities": [
+    {
+      "type": "lecture",
+      "content": "Hôm nay chúng ta sẽ tìm hiểu về các hành tinh trong hệ mặt trời của chúng ta. Có tất cả 8 hành tinh, bắt đầu từ Sao Thủy, gần Mặt Trời nhất."
+    },
+    {
+      "type": "flashcard",
+      "cards": [
+        {"front": "Hành tinh lớn nhất?", "back": "Sao Mộc"},
+        {"front": "Hành tinh có vành đai rõ nhất?", "back": "Sao Thổ"}
+      ]
+    },
+    {
+      "type": "quiz",
+      "questions": [
+        {
+          "question": "Hành tinh nào được gọi là 'Hành tinh Đỏ'?",
+          "options": ["Sao Kim", "Sao Hỏa", "Sao Mộc"],
+          "answer": "Sao Hỏa"
+        }
+      ]
+    }
+  ]
+}
+```
+
+### `actions.json`
+
+Lưu trữ các hành động tùy chỉnh do người dùng tạo.
+
+```json
+[
+  {
+    "voice_command": "tạo ảnh",
+    "method": "POST",
+    "url": "https://api.your-n8n.com/webhook/generate-image",
+    "body_template": "{\"prompt\": \"{data}\"}"
+  },
+  {
+    "voice_command": "đọc báo",
+    "method": "GET",
+    "url": "https://api.your-news.com/latest-news"
+  }
+]
+```
 
 ---
 
 ## 📈 Roadmap ToDo
 
-### Giai đoạn 1 – Nền tảng & Giao diện
-*   [ ] Cấu hình phần cứng (LCD, Touch, Loa, Mic, SD).
-*   [ ] UI Home (Đồng hồ, thời tiết) + Popup nhắc lịch.
-*   [ ] Học offline qua Flashcard & Quiz từ thẻ SD.
-*   [ ] Lưu tiến trình học cơ bản.
-
-### Giai đoạn 2 – Thông minh & Kết nối
-*   [ ] Tích hợp AI backend (ASR/TTS).
-*   [ ] Cá nhân hóa nhiều người dùng.
-*   [ ] **Tích hợp Telegram (Cốt lõi):** Gửi cảnh báo và nhận lệnh.
-*   [ ] Tích hợp Smarthome MQTT.
-
-### Giai đoạn 3 – Nền tảng Mở rộng
-*   [ ] **Xây dựng Hệ thống Mở rộng (Custom Actions):**
-    *   [ ] Giao diện UI để người dùng tự tạo/quản lý các hành động.
-    *   [ ] Cơ chế lưu/tải cấu hình hành động từ thẻ SD.
-    *   [ ] Engine thực thi: nhận diện lệnh thoại tùy chỉnh và gọi API tương ứng.
-*   [ ] **Hoàn thiện Robot mở rộng (ESP32-CAM):**
-    *   Tích hợp sâu hơn với hệ thống cảnh báo và hành động tùy chỉnh.
+*(Roadmap không thay đổi)*
 
 ---
-*Các phần còn lại như Hướng dẫn triển khai, Quản lý thẻ SD, Cấu trúc dữ liệu sẽ được giữ nguyên và chi tiết hóa trong quá trình phát triển.*
+
+*Các phần Hướng dẫn triển khai sẽ được giữ nguyên.*

@@ -1,0 +1,14 @@
+[
+  {
+    "time": "08:00",
+    "days": ["Mon", "Wed", "Fri"],
+    "event_type": "Học bài",
+    "details": "Toán - Chương 3: Hình học không gian"
+  },
+  {
+    "time": "20:00",
+    "days": ["Tue", "Thu"],
+    "event_type": "Làm bài tập",
+    "details": "Vật lý - Bài tập về nhà"
+  }
+]
