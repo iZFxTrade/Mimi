@@ -14,7 +14,7 @@
     *   Kết nối các thành viên trong gia đình thông qua các hoạt động chung và lời nhắc.
 
 *   📚 **Gia sư thông minh hai chế độ**
-    *   **Học theo giáo trình có sẵn:** Tự động đọc và dạy theo các file bài học (`lesson.json`) được chuẩn bị sẵn trên thẻ nhớ, đảm bảo lộ trình học tập chi tiết.
+    *   **Học theo giáo trình có sẵn:** Tự động đọc và dạy theo các file bài học (`.json`) được chuẩn bị sẵn trên thẻ nhớ, đảm bảo lộ trình học tập chi tiết.
     *   **Học theo chủ đề do AI tạo:** Chỉ cần ra lệnh với chủ đề và mục tiêu (ví dụ: "MiMi, dạy bé về các loại khủng long ăn thịt"), MiMi sẽ tự động biên soạn bài giảng, câu đố và flashcard để đạt được mục tiêu học tập đó.
 
 *   📱 **Giám sát & Điều khiển từ xa qua Telegram**
@@ -40,10 +40,17 @@ Thư mục gốc của thẻ SD sẽ chứa các file cấu hình và thư mục
 ├── config.json
 ├── timetable.json
 ├── actions.json
-├── lessons/
+├── learning/
 │   └── ... (các file bài học .json)
+├── music/
+│   └── ... (các file nhạc .mp3, .wav)
+├── system/
+│   └── ... (file hệ thống, log, v.v.)
 └── profiles/
-    └── ... (thư mục của từng người dùng)
+    └── {user_name}/
+        ├── images/
+        │   └── ... (hình ảnh của người dùng)
+        └── progress.json
 ```
 
 ### `config.json`
@@ -81,7 +88,7 @@ Chứa lịch học, lịch làm việc và các sự kiện.
 ]
 ```
 
-### `lessons/{subject}/{lesson_name}.json`
+### `learning/{subject}/{lesson_name}.json`
 
 Cấu trúc của một file bài học cho chế độ học theo giáo trình.
 
