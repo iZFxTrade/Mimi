@@ -14,13 +14,20 @@
 
 ## Giai đoạn 1: Tích hợp phần cứng và UI cơ bản
 
--   [ ] **1.1. Tích hợp `mimi-cyd` vào hệ thống build:**
-    -   [ ] **1.1.1.** Chỉnh sửa file `firmware/main/Kconfig.projbuild` để thêm lựa chọn `BOARD_TYPE_MIMI_CYD`.
--   [ ] **1.2. Hoàn thiện lớp Board `mimi-cyd`:**
-    -   [ ] Implement lớp `MimiCydBoard` và các phương thức cần thiết.
--   [ ] **1.3. Xây dựng giao diện UI cơ bản:**
-    -   [ ] Hiển thị màn hình chính với đồng hồ, thời tiết.
-    -   [ ] Hiển thị popup nhắc lịch.
+-   [x] **1.1. Tích hợp `mimi-cyd` vào hệ thống build:**
+    -   [x] **1.1.1.** Chỉnh sửa file `firmware/main/Kconfig.projbuild` để thêm lựa chọn `BOARD_TYPE_MIMI_CYD`.
+-   [x] **1.2. Hoàn thiện lớp Board `mimi-cyd`:**
+    -   [x] Implement lớp `MimiCydBoard` và các phương thức cần thiết.
+-   [x] **1.3. Xây dựng bộ giao diện người dùng (UI):**
+    -   [x] **1.3.1. Màn hình Biểu cảm Trợ lý (Assistant Face):** Giao diện tương tác chính, hiển thị biểu cảm và cho phép tương tác chạm.
+    -   [x] **1.3.2. Màn hình Trò chuyện (Chat):** Hiển thị lịch sử hội thoại giữa người dùng và AI.
+    -   [x] **1.3.3. Màn hình Tổng quan (Dashboard):** Tích hợp đồng hồ, lịch/thời khóa biểu và thời tiết.
+    -   [ ] **1.3.4. Màn hình Gia sư (Learning Tutor):** Giao diện dành riêng cho việc học tập.
+    -   [x] **1.3.5. Màn hình Báo cáo & Thống kê (Reports & Stats):** Hiển thị tiến độ, kết quả học tập và các số liệu thống kê.
+    -   [ ] **1.3.6. Màn hình Nhà thông minh (Smart Home):** Giao diện điều khiển các thiết bị smarthome.
+    -   [x] **1.3.7. Màn hình Media Player:** Giao diện điều khiển nhạc/podcast.
+    -   [ ] **1.3.8. Màn hình Cài đặt (Settings):** Cấu hình hệ thống và các kết nối.
+    -   [x] **1.3.9. Màn hình Tính năng Mở rộng (Extensions):** Giao diện quản lý các hành động tùy chỉnh.
 
 ---
 
@@ -55,3 +62,18 @@
 
 -   [ ] **3.2. Hoàn thiện Robot mở rộng (ESP32-CAM):**
     -   [ ] Tích hợp sâu hơn với hệ thống cảnh báo và hành động tùy chỉnh (ví dụ: hành động "chụp ảnh" sẽ kích hoạt ESP32-CAM và gửi ảnh qua Telegram).
+
+---
+
+## 📝 Ghi chú & Tóm tắt (Kết thúc ngày làm việc)
+
+### Tóm tắt công việc đã làm:
+
+*   **Hoàn thành Giao diện Người dùng (UI) cho Giai đoạn 1:**
+    *   Tích hợp thành công thư viện vẽ khuôn mặt vector `emotion_custom.c` vào `AssistantFaceView`, thay thế hoàn toàn giao diện cũ.
+    *   Khuôn mặt trợ lý giờ đây có thể biểu cảm (`happy`, `sad`, `thinking`...) và phản hồi lại các tương tác chạm (xoa đầu, chọc mũi).
+    *   Tạo và triển khai mã nguồn cho các màn hình giao diện chính: `HomeView` (Dashboard), `ReportsView`, `MediaView`, `ExtensionsView`, và `ChatView`.
+
+### Vấn đề tồn đọng & Việc cần làm tiếp theo:
+
+*   **[QUAN TRỌNG] Chưa Biên dịch (Build) Dự án:** Toàn bộ mã nguồn mới được viết và tích hợp nhưng **chưa được biên dịch và kiểm tra**. Đây là ưu tiên hàng đầu cho ngày làm việc tiếp theo để phát hiện và sửa các lỗi cú pháp, lỗi liên kết (linker errors) hoặc các vấn đề tương thích khác. Cần chạy lệnh `idf.py build` để bắt đầu.

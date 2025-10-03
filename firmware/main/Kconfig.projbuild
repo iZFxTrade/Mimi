@@ -88,6 +88,10 @@ choice BOARD_TYPE
     config BOARD_TYPE_BREAD_COMPACT_WIFI
         bool "Bread Compact WiFi (面包板)"
         depends on IDF_TARGET_ESP32S3
+    config BOARD_TYPE_MIMI_CYD
+        bool "MiMi ESP32-CYD (Cheap Yellow Display)"
+        depends on IDF_TARGET_ESP32
+
     config BOARD_TYPE_BREAD_COMPACT_WIFI_LCD
         bool "Bread Compact WiFi + LCD (面包板)"
         depends on IDF_TARGET_ESP32S3

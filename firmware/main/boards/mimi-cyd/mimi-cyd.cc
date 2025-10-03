@@ -1,13 +1,13 @@
-
 #include "application.h"
 #include "mcp_server.h"
 #include "display/lcd_display.h"
 #include "audio/audio_service.h"
 #include "audio/codecs/no_audio_codec.h"
-#include "audio/processors/no_audio_processor.h"
+#include "audio/processors/default_audio_processor.h" // Use the default processor
 #include "audio/wake_words/no_wake_word.h"
 #include "common/wifi_board.h"
 #include "common/i2c_device.h"
+#include "led/rgb_led.h" // Include the RGB LED header
 
 #include "mimi-cyd/config.h"
 
@@ -20,7 +20,8 @@ public:
 
     void Init() override {
         WifiBoard::Init();
-        // Here you can add any board-specific initialization code
+        // Board-specific initialization
+        led->SetColor(255, 0, 0); // Set initial color to Red
     }
 
     Display *GetDisplay() override {
@@ -28,20 +29,18 @@ public:
     }
 
     AudioService *GetAudio() override {
-        // Audio is disabled for now, will be implemented in the next steps
         return audio_service;
     }
 
     Led *GetLed() override {
-        // TODO: Implement RGB LED control
-        return nullptr;
+        return led;
     }
 
     MimiCydBoard() {
-        // Initialize I2C for potential expansions, even if not used by default
+        // Initialize I2C for potential expansions
         i2c = new I2cDevice(I2C_NUM_0, -1, -1);
 
-        // Initialize the LCD display
+        // Initialize the LCD display with touch
         display = new LcdDisplay(
             PIN_NUM_BCKL,
             LCD_HOST,
@@ -49,39 +48,52 @@ public:
             PIN_NUM_DC,
             PIN_NUM_CLK,
             PIN_NUM_MOSI,
-            -1, // MISO not used
+            PIN_NUM_MISO,
             PIN_NUM_RST,
-            -1, // IRQ not used
+            TOUCH_PIN_IRQ,
             TOUCH_HOST,
             TOUCH_PIN_NUM_CS,
             TOUCH_PIN_NUM_CLK,
             TOUCH_PIN_NUM_MOSI,
             TOUCH_PIN_NUM_MISO,
-            TOUCH_PIN_IRQ
+            -1 // Touch IRQ already passed above
         );
 
-        // Initialize a placeholder audio service (NoAudio)
-        // This will be replaced with the actual I2S implementation later
+        // Initialize the Audio Service with I2S microphone and DAC speaker
         audio_service = new AudioService(
             new NoWakeWord(),
-            new NoAudioProcessor(),
-            new NoAudioCodec()
+            new DefaultAudioProcessor(), // Use the default audio processor
+            new NoAudioCodecSimplex(
+                16000, // input sample rate
+                16000, // output sample rate
+                I2S_SPEAKER_PIN_BCK,
+                I2S_SPEAKER_PIN_WS,
+                (gpio_num_t)I2S_SPEAKER_PIN_DATA,
+                I2S_MIC_PIN_BCK,
+                I2S_MIC_PIN_WS,
+                I2S_MIC_PIN_DATA
+            )
         );
+
+        // Initialize the RGB LED
+        led = new RgbLed(RGB_LED_PIN_R, RGB_LED_PIN_G, RGB_LED_PIN_B, 3, true);
     }
 
     ~MimiCydBoard() {
         delete display;
         delete audio_service;
         delete i2c;
+        delete led;
     }
 
 private:
     LcdDisplay *display;
     AudioService *audio_service;
     I2cDevice *i2c;
+    RgbLed *led;
 };
 
-// Function to register the board
+// Function to register the board with the system
 void board_register_mimi_cyd() {
     static MimiCydBoard board;
     Board::Register(&board);
