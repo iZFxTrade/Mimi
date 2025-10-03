@@ -1,7 +1,8 @@
-# 🎀 MiMi – Smart Learning & Home Assistant
+# 🎀 MiMi – Trợ lý Học tập & Gia đình Thông minh
 
-> **MiMi** là một **trợ lý AI cá nhân hóa** chạy trên **ESP32-CYD (Cheap Yellow Display)**.
-> MiMi không chỉ là **loa AI để bàn**, mà còn là **gia sư học tập, thư ký lịch trình, trợ lý gia đình** và có thể mở rộng thành **robot thông minh** với ESP32-CAM.
+> **Lưu ý:** Đây là một phiên bản tùy biến (fork) của dự án [xiaozhi-esp32](https://github.com/78/xiaozhi-esp32), được tối ưu hóa riêng cho phần cứng **ESP32-CYD (Cheap Yellow Display)** và bổ sung các tính năng dành cho dự án MiMi.
+
+**MiMi** là một **trợ lý AI cá nhân hóa** chạy trên **ESP32-CYD**. MiMi không chỉ là **loa AI để bàn**, mà còn là **gia sư học tập, thư ký lịch trình, trợ lý gia đình** và có thể mở rộng thành **robot thông minh** với ESP32-CAM.
 
 ---
 
@@ -9,25 +10,26 @@
 
 ### 1. Chuẩn bị linh kiện
 
-* ESP32-2432S028R (CYD) – mainboard.
-* INMP441 (mic I2S).
-* Loa tích hợp NS4168.
-* SD Card (SPI).
-* ESP32-CAM (tùy chọn robot).
-* Driver động cơ (TB6612FNG hoặc PCA9685, nếu làm robot).
-* Cảm biến tránh vật cản, nhiệt độ/độ ẩm (tùy chọn).
+*   ESP32-2432S028R (CYD) – mainboard.
+*   INMP441 (mic I2S).
+*   Loa tích hợp NS4168.
+*   SD Card (SPI).
+*   ESP32-CAM (tùy chọn robot).
+*   Driver động cơ (TB6612FNG hoặc PCA9685, nếu làm robot).
+*   Cảm biến tránh vật cản, nhiệt độ/độ ẩm (tùy chọn).
 
-### 2. Clone firmware nền tảng
+### 2. Clone firmware và Cài đặt
 
-Dự án MiMi tùy biến từ [xiaozhi-esp32](https://github.com/78/xiaozhi-esp32):
+Để bắt đầu, hãy clone kho lưu trữ của dự án MiMi:
 
 ```bash
-git clone https://github.com/78/xiaozhi-esp32.git
-cd xiaozhi-esp32
+git clone https://github.com/iZFxTrade/Mimi.git
+cd Mimi
 ```
 
-Sau đó tùy biến code để thêm UI học tập, nhắc lịch, quản lý dữ liệu SD và tích hợp smarthome.
-### sơ đồ chân ESP32-CYD 
+Dự án này được xây dựng dựa trên nền tảng của [xiaozhi-esp32](https://github.com/78/xiaozhi-esp32). Sau khi clone, bạn có thể bắt đầu tùy biến code để thêm UI học tập, nhắc lịch, quản lý dữ liệu từ thẻ nhớ SD và tích hợp smarthome.
+
+### Sơ đồ chân ESP32-CYD
 ```bash
 // =================================================================
 // BẢNG TỔNG HỢP CHÂN GPIO ĐÃ DÙNG TRÊN ESP32-CYD (ESP32-2432S028R)
@@ -67,47 +69,9 @@ Sau đó tùy biến code để thêm UI học tập, nhắc lịch, quản lý 
 #define UART_RX_PIN     GPIO_NUM_3    // Giao tiếp Serial (RX)
 #define BOOT_BUTTON_PIN GPIO_NUM_0    // Nút BOOT (Không nên dùng)
 
-
-// =================================================================
-// CHI TIẾT CỔNG MỞ RỘNG P3 VÀ CN1 (Để xác định chân trống)
-// =================================================================
-
-// --- CONNECTOR P3 ---
-// Pin 1: 3V3 (Nguồn)
-// Pin 2: GND (Đất)
-// Pin 3: GPIO35 (TRỐNG, INPUT-ONLY)
-// Pin 4: GPIO22 (TRỐNG, Đa năng)
-// Pin 5: GPIO21 (Đèn nền Màn hình BL)
-
-// --- CONNECTOR CN1 ---
-// Pin 1: GND (Đất)
-// Pin 2: GPIO22 (TRỐNG, Đa năng)
-// Pin 3: GPIO27 (TRỐNG, Đa năng)
-// Pin 4: 3V3 (Nguồn)
-
-
-// =================================================================
-// CHÂN CÒN TRỐNG TỐI ƯU ĐỂ KẾT NỐI MICROPHONE INMP441 (I2S)
-// (Sử dụng các chân GPIO35, GPIO22, GPIO27)
-// =================================================================
-
-// I2S Clock (SCK): Chân xung nhịp đồng bộ
-//   - Vị trí: Connector CN1
-#define I2S_SCK_PIN     GPIO_NUM_27   // CHÂN CÒN TRỐNG TỐI ƯU CHO I2S CLOCK
-
-// I2S Word Select (WS) / L-R Clock: Chân chọn kênh
-//   - Vị trí: Connector P3 hoặc CN1
-#define I2S_WS_PIN      GPIO_NUM_22   // CHÂN CÒN TRỐNG TỐI ƯU CHO I2S WORD SELECT
-
-// I2S Serial Data (SD) / Data Input (DIN): Dữ liệu âm thanh
-//   - Vị trí: Connector P3. Là chân Input lý tưởng trên ESP32.
-#define I2S_SD_PIN      GPIO_NUM_35   // CHÂN CÒN TRỐNG TỐI ƯU CHO I2S DATA INPUT
-
-// CÁC CHÂN NGUỒN CẦN THIẾT KHÁC (Nối dây vật lý):
-// #define MIC_VCC         3V3           // Nối với 3V3 trên P3/CN1
-// #define MIC_GND         GND           // Nối với GND trên P3/CN1
-// #define MIC_L_R         GND           // Nối cứng với GND để chọn kênh
+// ... (các phần còn lại của file)
 ```
+
 ### 3. Đấu dây INMP441 (Mic I2S)
 ## 📷 Sơ đồ kết nối Microphone
 
@@ -125,56 +89,56 @@ Sau đó tùy biến code để thêm UI học tập, nhắc lịch, quản lý 
 
 ### 4. Build & Flash
 
-* Sử dụng **ESP-IDF** hoặc **Arduino IDE**.
-* Chọn board: `ESP32 Dev Module`.
-* Flash firmware đã tùy biến.
+*   Sử dụng **ESP-IDF** hoặc **Arduino IDE**.
+*   Chọn board: `ESP32 Dev Module`.
+*   Flash firmware đã tùy biến.
 
 ### 5. Chuẩn bị SD Card
 
-* Tạo thư mục `/learning/`, `/profiles/`, `/progress/` trên SD.
-* Copy các file JSON mẫu (curriculum, timetable, lessons).
+*   Tạo thư mục `/learning/`, `/profiles/`, `/progress/` trên SD.
+*   Copy các file JSON mẫu (curriculum, timetable, lessons).
 
 ---
 
 ## ✨ Tính năng chính
 
-* 📚 **Gia sư học tập**
+*   📚 **Gia sư học tập**
 
-  * Học ngoại ngữ, toán, vật lý... theo giáo trình.
-  * Flashcard, quiz, câu hỏi vấn đáp.
-  * Kiểm tra & chấm điểm sau bài học (trả bài).
-  * Lưu tiến trình học của từng thành viên.
+    *   Học ngoại ngữ, toán, vật lý... theo giáo trình.
+    *   Flashcard, quiz, câu hỏi vấn đáp.
+    *   Kiểm tra & chấm điểm sau bài học (trả bài).
+    *   Lưu tiến trình học của từng thành viên.
 
-* 🗓️ **Quản lý lịch học & công việc**
+*   🗓️ **Quản lý lịch học & công việc**
 
-  * Nhắc học/bài tập theo `timetable.json`.
-  * Người dùng xác nhận bằng giọng nói hoặc bấm trên màn hình.
-  * Bài tập thực hành → MiMi bấm giờ, lưu thời gian hoàn thành.
+    *   Nhắc học/bài tập theo `timetable.json`.
+    *   Người dùng xác nhận bằng giọng nói hoặc bấm trên màn hình.
+    *   Bài tập thực hành → MiMi bấm giờ, lưu thời gian hoàn thành.
 
-* 🎶 **Âm nhạc theo ngữ cảnh**
+*   🎶 **Âm nhạc theo ngữ cảnh**
 
-  * Học → Lo-fi tập trung.
-  * Ngủ → White noise/piano.
-  * Tập thể dục → Upbeat.
-  * Có thể phát nhạc từ SD hoặc gửi lệnh Google Home (MQTT/HA).
+    *   Học → Lo-fi tập trung.
+    *   Ngủ → White noise/piano.
+    *   Tập thể dục → Upbeat.
+    *   Có thể phát nhạc từ SD hoặc gửi lệnh Google Home (MQTT/HA).
 
-* 🏠 **Smarthome**
+*   🏠 **Smarthome**
 
-  * Kết nối MQTT/Home Assistant.
-  * Điều khiển đèn, quạt, thiết bị IoT bằng giọng nói.
+    *   Kết nối MQTT/Home Assistant.
+    *   Điều khiển đèn, quạt, thiết bị IoT bằng giọng nói.
 
-* 👨‍👩‍👧‍👦 **Cá nhân hóa nhiều người dùng**
+*   👨‍👩‍👧‍👦 **Cá nhân hóa nhiều người dùng**
 
-  * Profile riêng cho từng thành viên (cha/mẹ/chị/em).
-  * Nhận diện qua giọng nói, camera (ESP32-CAM) hoặc chọn trên UI.
-  * Cha mẹ có thể yêu cầu MiMi báo cáo tình hình học tập của con.
+    *   Profile riêng cho từng thành viên (cha/mẹ/chị/em).
+    *   Nhận diện qua giọng nói, camera (ESP32-CAM) hoặc chọn trên UI.
+    *   Cha mẹ có thể yêu cầu MiMi báo cáo tình hình học tập của con.
 
-* 🤖 **Robot mở rộng (ESP32-CAM)**
+*   🤖 **Robot mở rộng (ESP32-CAM)**
 
-  * Tuần tra trong nhà.
-  * Gửi video đến AI backend nhận diện người lạ.
-  * MiMi hiển thị cảnh báo và phát thông báo.
-  * CYD có thể gắn lên robot làm “khuôn mặt biểu cảm”.
+    *   Tuần tra trong nhà.
+    *   Gửi video đến AI backend nhận diện người lạ.
+    *   MiMi hiển thị cảnh báo và phát thông báo.
+    *   CYD có thể gắn lên robot làm “khuôn mặt biểu cảm”.
 
 ---
 
@@ -182,42 +146,42 @@ Sau đó tùy biến code để thêm UI học tập, nhắc lịch, quản lý 
 
 ### 1. Khi **không phát hiện SD card**
 
-* Hiển thị popup: *“⚠️ Vui lòng gắn thẻ SD để sử dụng đầy đủ tính năng học tập & lưu trữ dữ liệu.”*
-* Giọng nói thông báo tương tự.
-* Chỉ chạy chế độ tối giản: đồng hồ, thời tiết, biểu cảm cơ bản, smarthome MQTT (nếu có cấu hình).
+*   Hiển thị popup: *“⚠️ Vui lòng gắn thẻ SD để sử dụng đầy đủ tính năng học tập & lưu trữ dữ liệu.”*
+*   Giọng nói thông báo tương tự.
+*   Chỉ chạy chế độ tối giản: đồng hồ, thời tiết, biểu cảm cơ bản, smarthome MQTT (nếu có cấu hình).
 
 ### 2. Khi **cắm SD card lần đầu**
 
-* Tự động tạo các thư mục hệ thống:
+*   Tự động tạo các thư mục hệ thống:
 
-  ```
-  /profiles/
-  /profiles/images/
-  /progress/
-  /learning/
-  /music/
-  /system/
-  ```
-* Sinh file mặc định:
+    ```
+    /profiles/
+    /profiles/images/
+    /progress/
+    /learning/
+    /music/
+    /system/
+    ```
+*   Sinh file mặc định:
 
-  * `config.json` (WiFi, MQTT, AI backend).
-  * `timetable.json` (rỗng).
-  * `curriculum.json` (mẫu).
-  * `lessons/` (chứa vài bài demo).
+    *   `config.json` (WiFi, MQTT, AI backend).
+    *   `timetable.json` (rỗng).
+    *   `curriculum.json` (mẫu).
+    *   `lessons/` (chứa vài bài demo).
 
 ### 3. Khi **SD card có dữ liệu cũ**
 
-* Đọc file cấu hình & dữ liệu.
-* Nếu thiếu thư mục/file → bổ sung.
-* Nếu file hỏng → tạo lại file mặc định và thông báo: *“Một số file bị lỗi, MiMi đã tạo lại file mặc định.”*
+*   Đọc file cấu hình & dữ liệu.
+*   Nếu thiếu thư mục/file → bổ sung.
+*   Nếu file hỏng → tạo lại file mặc định và thông báo: *“Một số file bị lỗi, MiMi đã tạo lại file mặc định.”*
 
 ### 4. Lưu trữ dữ liệu
 
-* **Tiến trình học**: `/profiles/<user>/progress/`.
-* **Ảnh profile**: `/profiles/images/<user>.jpg`.
-* **Giáo trình**: `/learning/curriculum.json`.
-* **Nhạc**: `/music/`.
-* **Cấu hình hệ thống**: `/system/config.json`.
+*   **Tiến trình học**: `/profiles/<user>/progress/`.
+*   **Ảnh profile**: `/profiles/images/<user>.jpg`.
+*   **Giáo trình**: `/learning/curriculum.json`.
+*   **Nhạc**: `/music/`.
+*   **Cấu hình hệ thống**: `/system/config.json`.
 
 👉 Mọi dữ liệu load theo nhu cầu, tránh chiếm RAM.
 
@@ -306,52 +270,52 @@ Sau đó tùy biến code để thêm UI học tập, nhắc lịch, quản lý 
 
 ### 1. Trang **Biểu cảm MiMi**
 
-* Hiển thị khuôn mặt MiMi (emoji-style): 😀 vui, 😐 bình thường, 😴 buồn ngủ, 😡 cảnh báo.
-* Nút cảm ứng: 🔊 bật/tắt giọng nói, ⚙️ vào Setting.
+*   Hiển thị khuôn mặt MiMi (emoji-style): 😀 vui, 😐 bình thường, 😴 buồn ngủ, 😡 cảnh báo.
+*   Nút cảm ứng: 🔊 bật/tắt giọng nói, ⚙️ vào Setting.
 
 ### 2. Trang **Đồng hồ + Thời tiết**
 
-* Hiển thị giờ, ngày, thời tiết (icon + nhiệt độ).
-* Nút: 📅 mở lịch, 🔄 refresh thời tiết, 🎶 bật nhạc nhanh.
+*   Hiển thị giờ, ngày, thời tiết (icon + nhiệt độ).
+*   Nút: 📅 mở lịch, 🔄 refresh thời tiết, 🎶 bật nhạc nhanh.
 
 ### 3. Trang **Lịch + Thời khóa biểu**
 
-* Hiển thị lịch tháng + lịch trình trong ngày.
-* Nút: ➕ thêm lịch, ✏️ chỉnh sửa, ❌ xóa.
-* Popup reminder: ✅ Bắt đầu | ⏰ Hoãn | ❌ Bỏ qua.
+*   Hiển thị lịch tháng + lịch trình trong ngày.
+*   Nút: ➕ thêm lịch, ✏️ chỉnh sửa, ❌ xóa.
+*   Popup reminder: ✅ Bắt đầu | ⏰ Hoãn | ❌ Bỏ qua.
 
 ### 4. Trang **Học + Tập**
 
-* **Học lý thuyết**: flashcard, quiz, nút ▶️ nghe phát âm, ✅ trả lời, 🔄 thử lại.
-* **Thực hành**: timer, nút “Đã hoàn thành”, popup gợi ý kiểm tra lại.
+*   **Học lý thuyết**: flashcard, quiz, nút ▶️ nghe phát âm, ✅ trả lời, 🔄 thử lại.
+*   **Thực hành**: timer, nút “Đã hoàn thành”, popup gợi ý kiểm tra lại.
 
 ### 5. Trang **Setting (Cấu hình)**
 
-* Cấu hình: WiFi, MQTT, chọn AI backend, quản lý profile, quản lý SD.
-* Nút: 💾 lưu, 🔄 reset.
+*   Cấu hình: WiFi, MQTT, chọn AI backend, quản lý profile, quản lý SD.
+*   Nút: 💾 lưu, 🔄 reset.
 
 ### 6. Trang **Báo cáo học tập**
 
-* Biểu đồ cột + tròn (tiến trình, điểm số).
-* Danh sách lỗi phổ biến.
-* Nút: 📤 xuất báo cáo, 🔍 chọn thành viên.
+*   Biểu đồ cột + tròn (tiến trình, điểm số).
+*   Danh sách lỗi phổ biến.
+*   Nút: 📤 xuất báo cáo, 🔍 chọn thành viên.
 
 ### 7. Trang **Trình phát nhạc**
 
-* Playlist từ SD + online, hiển thị bài hát đang phát.
-* Nút: ⏮️ | ▶️ | ⏭️, 🔊 volume, 🎵 chọn playlist.
+*   Playlist từ SD + online, hiển thị bài hát đang phát.
+*   Nút: ⏮️ | ▶️ | ⏭️, 🔊 volume, 🎵 chọn playlist.
 
 ---
 
 ## 👨‍👩‍👧‍👦 Cá nhân hóa
 
-* Hồ sơ riêng cho từng thành viên: `/profiles/father/`, `/profiles/mother/`, `/profiles/sister/`, `/profiles/brother/`.
-* Profile chứa lịch học, timetable, progress riêng.
-* Hỗ trợ ảnh profile trong `/profiles/images/`.
-* Cha mẹ có thể hỏi:
+*   Hồ sơ riêng cho từng thành viên: `/profiles/father/`, `/profiles/mother/`, `/profiles/sister/`, `/profiles/brother/`.
+*   Profile chứa lịch học, timetable, progress riêng.
+*   Hỗ trợ ảnh profile trong `/profiles/images/`.
+*   Cha mẹ có thể hỏi:
 
-  * “MiMi, báo cáo tình hình học của Nam tuần này.”
-  * “Lan có hoàn thành bài tập hôm nay không?”
+    *   “MiMi, báo cáo tình hình học của Nam tuần này.”
+    *   “Lan có hoàn thành bài tập hôm nay không?”
 
 ---
 
@@ -361,26 +325,26 @@ Sau đó tùy biến code để thêm UI học tập, nhắc lịch, quản lý 
 
 ### Giai đoạn 1 – Cơ bản
 
-* [ ] Cấu hình phần cứng (LCD, Touch, Loa, Mic, SD).
-* [ ] WebUI upload JSON.
-* [ ] UI Home + Reminder popup.
-* [ ] Flashcard + quiz offline.
-* [ ] Lưu progress.
+*   [ ] Cấu hình phần cứng (LCD, Touch, Loa, Mic, SD).
+*   [ ] WebUI upload JSON.
+*   [ ] UI Home + Reminder popup.
+*   [ ] Flashcard + quiz offline.
+*   [ ] Lưu progress.
 
 ### Giai đoạn 2 – Thông minh
 
-* [ ] Tích hợp AI backend (ASR/TTS, quiz generator).
-* [ ] Cá nhân hóa nhiều người dùng.
-* [ ] Báo cáo học tập cho cha mẹ.
-* [ ] Trả bài sau khi học hoặc làm bài tập.
-* [ ] Phát nhạc theo ngữ cảnh.
-* [ ] Smarthome MQTT.
+*   [ ] Tích hợp AI backend (ASR/TTS, quiz generator).
+*   [ ] Cá nhân hóa nhiều người dùng.
+*   [ ] Báo cáo học tập cho cha mẹ.
+*   [ ] Trả bài sau khi học hoặc làm bài tập.
+*   [ ] Phát nhạc theo ngữ cảnh.
+*   [ ] Smarthome MQTT.
 
 ### Giai đoạn 3 – Robot mở rộng
 
-* [ ] ESP32-CAM tuần tra.
-* [ ] Nhận diện khuôn mặt, cảnh báo người lạ.
-* [ ] CYD gắn lên robot làm mặt biểu cảm.
+*   [ ] ESP32-CAM tuần tra.
+*   [ ] Nhận diện khuôn mặt, cảnh báo người lạ.
+*   [ ] CYD gắn lên robot làm mặt biểu cảm.
 
 ---
 
@@ -388,17 +352,17 @@ Sau đó tùy biến code để thêm UI học tập, nhắc lịch, quản lý 
 
 Dự án MiMi dựa trên [**xiaozhi-esp32**](https://github.com/78/xiaozhi-esp32) – một firmware mã nguồn mở cho ESP32 hỗ trợ:
 
-* 🎙️ ASR (Speech-to-Text)
-* 🔊 TTS (Text-to-Speech)
-* 🧑‍🤝‍🧑 Voiceprint Recognition (nhận diện giọng nói)
-* 🌐 MQTT/WebSocket
+*   🎙️ ASR (Speech-to-Text)
+*   🔊 TTS (Text-to-Speech)
+*   🧑‍🤝‍🧑 Voiceprint Recognition (nhận diện giọng nói)
+*   🌐 MQTT/WebSocket
 
 👉 MiMi sẽ tùy biến lại firmware này:
 
-* Thêm **UI học tập + nhắc lịch** bằng LVGL.
-* Quản lý dữ liệu SD (giáo án, timetable, progress).
-* Cá nhân hóa nhiều thành viên.
-* Tích hợp smarthome MQTT.
+*   Thêm **UI học tập + nhắc lịch** bằng LVGL.
+*   Quản lý dữ liệu SD (giáo án, timetable, progress).
+*   Cá nhân hóa nhiều thành viên.
+*   Tích hợp smarthome MQTT.
 
 ---
 
@@ -406,9 +370,9 @@ Dự án MiMi dựa trên [**xiaozhi-esp32**](https://github.com/78/xiaozhi-esp3
 
 MiMi là dự án **AI trợ lý học tập & gia đình** hoàn chỉnh, với khả năng:
 
-* Trợ giúp học tập có lộ trình, nhắc nhở thông minh.
-* Cá nhân hóa cho từng thành viên trong nhà.
-* Quản lý tiến trình học và báo cáo lại cho cha mẹ.
-* Kết hợp Smarthome & Robot mở rộng.
+*   Trợ giúp học tập có lộ trình, nhắc nhở thông minh.
+*   Cá nhân hóa cho từng thành viên trong nhà.
+*   Quản lý tiến trình học và báo cáo lại cho cha mẹ.
+*   Kết hợp Smarthome & Robot mở rộng.
 
 MiMi không chỉ là một thiết bị phần cứng, mà là **một thành viên ảo trong gia đình** – vừa là gia sư, vừa là thư ký, vừa là bạn đồng hành.
