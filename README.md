@@ -27,16 +27,99 @@ cd xiaozhi-esp32
 ```
 
 Sau đó tùy biến code để thêm UI học tập, nhắc lịch, quản lý dữ liệu SD và tích hợp smarthome.
+### sơ đồ chân ESP32-CYD 
+```bash
+// =================================================================
+// BẢNG TỔNG HỢP CHÂN GPIO ĐÃ DÙNG TRÊN ESP32-CYD (ESP32-2432S028R)
+// Board sử dụng module ESP32-WROOM-32
+// =================================================================
 
+// --- CHÂN ĐÃ DÙNG CỐ ĐỊNH CHO MÀN HÌNH TFT (ILI9341) (Giao tiếp SPI) ---
+#define TFT_MISO_PIN    GPIO_NUM_12   // Dữ liệu Màn hình (MISO)
+#define TFT_MOSI_PIN    GPIO_NUM_13   // Dữ liệu Màn hình (MOSI)
+#define TFT_SCK_PIN     GPIO_NUM_14   // Xung nhịp Màn hình (SCK)
+#define TFT_CS_PIN      GPIO_NUM_15   // Chip Select Màn hình
+#define TFT_DC_PIN      GPIO_NUM_2    // Data/Command Màn hình
+#define TFT_RST_PIN     -1            // Chân Reset Màn hình (Thường nối cứng hoặc không dùng)
+#define TFT_BL_PIN      GPIO_NUM_21   // Đèn nền (Backlight) màn hình (Dùng PWM)
+
+// --- CHÂN ĐÃ DÙNG CỐ ĐỊNH CHO CẢM ỨNG (XPT2046) (Giao tiếp SPI chia sẻ) ---
+#define TOUCH_IRQ_PIN   GPIO_NUM_36   // Ngắt Cảm ứng (Input-only)
+#define TOUCH_MOSI_PIN  GPIO_NUM_32   // Dữ liệu Cảm ứng (MOSI)
+#define TOUCH_MISO_PIN  GPIO_NUM_39   // Dữ liệu Cảm ứng (MISO) (Input-only)
+#define TOUCH_CLK_PIN   GPIO_NUM_25   // Xung nhịp Cảm ứng (CLK)
+#define TOUCH_CS_PIN    GPIO_NUM_33   // Chip Select Cảm ứng
+
+// --- CHÂN ĐÃ DÙNG CỐ ĐỊNH CHO THẺ MICROSD (VSPI Bus) ---
+#define SD_MISO_PIN     GPIO_NUM_19   // Dữ liệu SD Card (MISO)
+#define SD_MOSI_PIN     GPIO_NUM_23   // Dữ liệu SD Card (MOSI)
+#define SD_SCK_PIN      GPIO_NUM_18   // Xung nhịp SD Card (SCK)
+#define SD_CS_PIN       GPIO_NUM_5    // Chip Select SD Card
+
+// --- CHÂN ĐÃ DÙNG CỐ ĐỊNH CHO ÂM THANH/LED ---
+#define SPEAKER_PIN     GPIO_NUM_26   // Loa/Còi (Sử dụng kênh DAC hoặc PWM)
+#define LED_RED_PIN     GPIO_NUM_4    // LED RGB (Kênh Đỏ)
+#define LED_GREEN_PIN   GPIO_NUM_16   // LED RGB (Kênh Xanh lá)
+#define LED_BLUE_PIN    GPIO_NUM_17   // LED RGB (Kênh Xanh dương)
+
+// --- CHÂN ĐÃ DÙNG CHO GIAO TIẾP LẬP TRÌNH/SERIAL ---
+#define UART_TX_PIN     GPIO_NUM_1    // Giao tiếp Serial (TX)
+#define UART_RX_PIN     GPIO_NUM_3    // Giao tiếp Serial (RX)
+#define BOOT_BUTTON_PIN GPIO_NUM_0    // Nút BOOT (Không nên dùng)
+
+
+// =================================================================
+// CHI TIẾT CỔNG MỞ RỘNG P3 VÀ CN1 (Để xác định chân trống)
+// =================================================================
+
+// --- CONNECTOR P3 ---
+// Pin 1: 3V3 (Nguồn)
+// Pin 2: GND (Đất)
+// Pin 3: GPIO35 (TRỐNG, INPUT-ONLY)
+// Pin 4: GPIO22 (TRỐNG, Đa năng)
+// Pin 5: GPIO21 (Đèn nền Màn hình BL)
+
+// --- CONNECTOR CN1 ---
+// Pin 1: GND (Đất)
+// Pin 2: GPIO22 (TRỐNG, Đa năng)
+// Pin 3: GPIO27 (TRỐNG, Đa năng)
+// Pin 4: 3V3 (Nguồn)
+
+
+// =================================================================
+// CHÂN CÒN TRỐNG TỐI ƯU ĐỂ KẾT NỐI MICROPHONE INMP441 (I2S)
+// (Sử dụng các chân GPIO35, GPIO22, GPIO27)
+// =================================================================
+
+// I2S Clock (SCK): Chân xung nhịp đồng bộ
+//   - Vị trí: Connector CN1
+#define I2S_SCK_PIN     GPIO_NUM_27   // CHÂN CÒN TRỐNG TỐI ƯU CHO I2S CLOCK
+
+// I2S Word Select (WS) / L-R Clock: Chân chọn kênh
+//   - Vị trí: Connector P3 hoặc CN1
+#define I2S_WS_PIN      GPIO_NUM_22   // CHÂN CÒN TRỐNG TỐI ƯU CHO I2S WORD SELECT
+
+// I2S Serial Data (SD) / Data Input (DIN): Dữ liệu âm thanh
+//   - Vị trí: Connector P3. Là chân Input lý tưởng trên ESP32.
+#define I2S_SD_PIN      GPIO_NUM_35   // CHÂN CÒN TRỐNG TỐI ƯU CHO I2S DATA INPUT
+
+// CÁC CHÂN NGUỒN CẦN THIẾT KHÁC (Nối dây vật lý):
+// #define MIC_VCC         3V3           // Nối với 3V3 trên P3/CN1
+// #define MIC_GND         GND           // Nối với GND trên P3/CN1
+// #define MIC_L_R         GND           // Nối cứng với GND để chọn kênh
+```
 ### 3. Đấu dây INMP441 (Mic I2S)
+## 📷 Sơ đồ kết nối Microphone
 
-| Pin INMP441 | ESP32 CYD GPIO |
-| ----------- | -------------- |
-| WS          | GPIO15         |
-| SCK         | GPIO14         |
-| SD          | GPIO32         |
-| VCC         | 3.3V           |
-| GND         | GND            |
+| INMP441 | ESP32-CYD | Cổng CN1/P3  |
+| ------- | --------- | ------------ |
+| VDD     | 3.3V      | CN1          |
+| GND     | GND       | CN1 hoặc P3  |
+| SD      | GPIO35    | P3           |
+| SCK     | IO27      | CN1          |
+| WS      | GPIO22    | CN1 or P3    |
+| L/R     | GND       | CN1/P3       |
+
 
 👉 Mic có thể kết nối trực tiếp, không cần module trung gian.
 
