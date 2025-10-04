@@ -21,15 +21,14 @@
     ];
 
     # Previews configuration to auto-start the server
-    previews = [
-      {
-        id = "mcp-server";
+    previews = {
+      "mcp-server" = {
         name = "MCP Server";
         command = "uvicorn MCP-Server.main:app --host 0.0.0.0 --port 8000";
         manager = "web";
         port = 8000;
-      }
-    ];
+      };
+    };
     
     # Workspace lifecycle hooks
     workspace = {
