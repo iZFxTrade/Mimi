@@ -88,6 +88,7 @@
 - [x] **Hiện thực hóa API OTA (Bản nháp):** Xây dựng endpoint `POST /api/ota/` với Pydantic models và logic giả lập trong `main.py`.
 - [x] **Cấu hình Môi trường Python:** Chỉnh sửa tệp `.idx/dev.nix` để thêm Python 3.11, Pip, extension `ms-python.python`, và cấu hình tự động cài đặt, chạy thử máy chủ.
 - [x] **Lưu trạng thái vào Git:** Thêm, commit (`f19c6ee`) và push tất cả các thay đổi lên kho lưu trữ từ xa để đảm bảo an toàn.
-- [ ] **Tải lại môi trường & Xác minh:** **CHỜ BẠN TẢI LẠI MÔI TRƯỜNG.** Ngay sau khi tải lại, tôi sẽ kiểm tra lại tệp `todo.md` này và bắt đầu bước tiếp theo.
+- [x] **Sửa lỗi Cấu hình Môi trường:** Phát hiện và sửa lỗi cú pháp trong tệp `.idx/dev.nix` sau khi môi trường không khởi động được. Cấu hình `previews` đã được điều chỉnh lại cho chính xác.
+- [ ] **Tải lại môi trường & Xác minh:** **CHỜ BẠN TẢI LẠI MÔI TRƯỜNG.** Sau khi tải lại, tôi sẽ bắt đầu khởi chạy máy chủ.
 - [ ] **Khởi chạy và kiểm thử máy chủ:** Sử dụng cấu hình `previews` đã thiết lập để khởi động máy chủ FastAPI và xác minh nó hoạt động.
 - [ ] **Kiểm thử API Endpoint `/api/ota/`:** Gửi một yêu cầu `curl` hoặc sử dụng một công cụ khác để kiểm tra phản hồi từ logic giả lập.
