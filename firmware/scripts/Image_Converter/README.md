@@ -1,45 +1,45 @@
-# LVGL图片转换工具  
+# Công cụ chuyển đổi ảnh LVGL
 
-这个目录包含两个用于处理和转换图片为LVGL格式的Python脚本：
+Thư mục này chứa hai tập lệnh Python để xử lý và chuyển đổi hình ảnh sang định dạng LVGL:
 
 ## 1. LVGLImage (LVGLImage.py)
 
-引用自LVGL[官方repo](https://github.com/lvgl/lvgl)的转换脚本[LVGLImage.py](https://github.com/lvgl/lvgl/blob/master/scripts/LVGLImage.py)  
+Tập lệnh chuyển đổi [LVGLImage.py](https://github.com/lvgl/lvgl/blob/master/scripts/LVGLImage.py) được trích dẫn từ [repo chính thức](https://github.com/lvgl/lvgl) của LVGL.
 
-## 2. LVGL图片转换工具 (lvgl_tools_gui.py)
+## 2. Công cụ chuyển đổi ảnh LVGL (lvgl_tools_gui.py)
 
-调用`LVGLImage.py`，将图片批量转换为LVGL图片格式  
-可用于修改小智的默认表情，具体修改教程[在这里](https://www.bilibili.com/video/BV12FQkYeEJ3/)
+Gọi `LVGLImage.py` để chuyển đổi hàng loạt hình ảnh sang định dạng ảnh LVGL.
+Có thể được sử dụng để sửa đổi biểu cảm mặc định của trợ lý, hướng dẫn sửa đổi cụ thể [tại đây](https://www.bilibili.com/video/BV12FQkYeEJ3/).
 
-### 特性
+### Tính năng
 
-- 图形化操作，界面更友好
-- 支持批量转换图片
-- 自动识别图片格式并选择最佳的颜色格式转换
-- 多分辨率支持
+- Giao diện đồ họa, thân thiện với người dùng.
+- Hỗ trợ chuyển đổi hàng loạt hình ảnh.
+- Tự động nhận dạng định dạng hình ảnh và chọn định dạng màu tốt nhất để chuyển đổi.
+- Hỗ trợ nhiều độ phân giải.
 
-### 使用方法
+### Cách sử dụng
 
-创建虚拟环境
+Tạo môi trường ảo
 ```bash
-# 创建 venv
+# Tạo venv
 python -m venv venv
-# 激活环境
+# Kích hoạt môi trường
 source venv/bin/activate  # Linux/Mac
 venv\Scripts\activate      # Windows
 ```
 
-安装依赖
+Cài đặt các gói phụ thuộc
 ```bash
 pip install -r requirements.txt
 ```
 
-运行转换工具
+Chạy công cụ chuyển đổi
 
 ```bash
-# 激活环境
+# Kích hoạt môi trường
 source venv/bin/activate  # Linux/Mac
 venv\Scripts\activate      # Windows
-# 运行
+# Chạy
 python lvgl_tools_gui.py
 ```

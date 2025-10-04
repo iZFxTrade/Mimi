@@ -6,15 +6,15 @@ import argparse
 from pathlib import Path
 from typing import Optional
 
-# Switch to project root directory
+# Chuyển đến thư mục gốc của dự án
 os.chdir(Path(__file__).resolve().parent.parent)
 
 ################################################################################
-# Common utility functions
+# Các hàm tiện ích chung
 ################################################################################
 
 def get_board_type_from_compile_commands() -> Optional[str]:
-    """Parse the current compiled BOARD_TYPE from build/compile_commands.json"""
+    """Phân tích cú pháp BOARD_TYPE đã biên dịch hiện tại từ build/compile_commands.json"""
     compile_file = Path("build/compile_commands.json")
     if not compile_file.exists():
         return None
@@ -30,7 +30,7 @@ def get_board_type_from_compile_commands() -> Optional[str]:
 
 
 def get_project_version() -> Optional[str]:
-    """Read set(PROJECT_VER "x.y.z") from root CMakeLists.txt"""
+    """Đọc set(PROJECT_VER "x.y.z") từ tệp CMakeLists.txt gốc"""
     with Path("CMakeLists.txt").open() as f:
         for line in f:
             if line.startswith("set(PROJECT_VER"):
@@ -40,12 +40,12 @@ def get_project_version() -> Optional[str]:
 
 def merge_bin() -> None:
     if os.system("idf.py merge-bin") != 0:
-        print("merge-bin failed", file=sys.stderr)
+        print("merge-bin không thành công", file=sys.stderr)
         sys.exit(1)
 
 
 def zip_bin(name: str, version: str) -> None:
-    """Zip build/merged-binary.bin to releases/v{version}_{name}.zip"""
+    """Nén build/merged-binary.bin thành releases/v{version}_{name}.zip"""
     out_dir = Path("releases")
     out_dir.mkdir(exist_ok=True)
     output_path = out_dir / f"v{version}_{name}.zip"
@@ -55,20 +55,20 @@ def zip_bin(name: str, version: str) -> None:
 
     with zipfile.ZipFile(output_path, "w", compression=zipfile.ZIP_DEFLATED) as zipf:
         zipf.write("build/merged-binary.bin", arcname="merged-binary.bin")
-    print(f"zip bin to {output_path} done")
+    print(f"Nén bin vào {output_path} đã hoàn tất")
 
 ################################################################################
-# board / variant related functions
+# các hàm liên quan đến board / biến thể
 ################################################################################
 
 _BOARDS_DIR = Path("main/boards")
 
 
 def _collect_variants(config_filename: str = "config.json") -> list[dict[str, str]]:
-    """Traverse all boards under main/boards, collect variant information.
+    """Duyệt qua tất cả các board trong main/boards, thu thập thông tin biến thể.
 
-    Return example:
-        [{"board": "bread-compact-ml307", "name": "bread-compact-ml307"}, ...]
+    Ví dụ trả về:
+        [{{"board": "bread-compact-ml307", "name": "bread-compact-ml307"}}, ...]
     """
     variants: list[dict[str, str]] = []
     for board_path in _BOARDS_DIR.iterdir():
@@ -78,7 +78,7 @@ def _collect_variants(config_filename: str = "config.json") -> list[dict[str, st
             continue
         cfg_path = board_path / config_filename
         if not cfg_path.exists():
-            print(f"[WARN] {cfg_path} does not exist, skip", file=sys.stderr)
+            print(f"[CẢNH BÁO] {cfg_path} không tồn tại, bỏ qua", file=sys.stderr)
             continue
         try:
             with cfg_path.open() as f:
@@ -86,12 +86,12 @@ def _collect_variants(config_filename: str = "config.json") -> list[dict[str, st
             for build in cfg.get("builds", []):
                 variants.append({"board": board_path.name, "name": build["name"]})
         except Exception as e:
-            print(f"[ERROR] 解析 {cfg_path} 失败: {e}", file=sys.stderr)
+            print(f"[LỖI] Phân tích {cfg_path} không thành công: {e}", file=sys.stderr)
     return variants
 
 
 def _parse_board_config_map() -> dict[str, str]:
-    """Build the mapping of CONFIG_BOARD_TYPE_xxx and board_type from main/CMakeLists.txt"""
+    """Xây dựng ánh xạ của CONFIG_BOARD_TYPE_xxx và board_type từ main/CMakeLists.txt"""
     cmake_file = Path("main/CMakeLists.txt")
     mapping: dict[str, str] = {}
     lines = cmake_file.read_text(encoding="utf-8").splitlines()
@@ -107,14 +107,14 @@ def _parse_board_config_map() -> dict[str, str]:
 
 
 def _find_board_config(board_type: str) -> Optional[str]:
-    """Find the corresponding CONFIG_BOARD_TYPE_xxx for the given board_type"""
+    """Tìm CONFIG_BOARD_TYPE_xxx tương ứng cho board_type đã cho"""
     for config, b_type in _parse_board_config_map().items():
         if b_type == board_type:
             return config
     return None
 
 ################################################################################
-# Check board_type in CMakeLists
+# Kiểm tra board_type trong CMakeLists
 ################################################################################
 
 def _board_type_exists(board_type: str) -> bool:
@@ -123,24 +123,24 @@ def _board_type_exists(board_type: str) -> bool:
     return pattern in cmake_file.read_text(encoding="utf-8")
 
 ################################################################################
-# Compile implementation
+# Triển khai biên dịch
 ################################################################################
 
 def release(board_type: str, config_filename: str = "config.json", *, filter_name: Optional[str] = None) -> None:
-    """Compile and package all/specified variants of the specified board_type
+    """Biên dịch và đóng gói tất cả/các biến thể được chỉ định của board_type được chỉ định
 
-    Args:
-        board_type: directory name under main/boards
-        config_filename: config.json name (default: config.json)
-        filter_name: if specified, only compile the build["name"] that matches
+    Đối số:
+        board_type: tên thư mục trong main/boards
+        config_filename: tên config.json (mặc định: config.json)
+        filter_name: nếu được chỉ định, chỉ biên dịch build["name"] phù hợp
     """
     cfg_path = _BOARDS_DIR / board_type / config_filename
     if not cfg_path.exists():
-        print(f"[WARN] {cfg_path} 不存在，跳过 {board_type}")
+        print(f"[CẢNH BÁO] {cfg_path} không tồn tại, bỏ qua {board_type}")
         return
 
     project_version = get_project_version()
-    print(f"Project Version: {project_version} ({cfg_path})")
+    print(f"Phiên bản dự án: {project_version} ({cfg_path})")
 
     with cfg_path.open() as f:
         cfg = json.load(f)
@@ -150,46 +150,46 @@ def release(board_type: str, config_filename: str = "config.json", *, filter_nam
     if filter_name:
         builds = [b for b in builds if b["name"] == filter_name]
         if not builds:
-            print(f"[ERROR] 未在 {board_type} 的 {config_filename} 中找到变体 {filter_name}", file=sys.stderr)
+            print(f"[LỖI] Không tìm thấy biến thể {filter_name} trong {config_filename} của {board_type}", file=sys.stderr)
             sys.exit(1)
 
     for build in builds:
         name = build["name"]
         if not name.startswith(board_type):
-            raise ValueError(f"build.name {name} 必须以 {board_type} 开头")
+            raise ValueError(f"build.name {name} phải bắt đầu bằng {board_type}")
 
         output_path = Path("releases") / f"v{project_version}_{name}.zip"
         if output_path.exists():
-            print(f"跳过 {name} 因为 {output_path} 已存在")
+            print(f"Bỏ qua {name} vì {output_path} đã tồn tại")
             continue
 
-        # Process sdkconfig_append
+        # Xử lý sdkconfig_append
         board_type_config = _find_board_config(board_type)
         sdkconfig_append = [f"{board_type_config}=y"]
         sdkconfig_append.extend(build.get("sdkconfig_append", []))
 
         print("-" * 80)
-        print(f"name: {name}")
-        print(f"target: {target}")
+        print(f"tên: {name}")
+        print(f"mục tiêu: {target}")
         for item in sdkconfig_append:
             print(f"sdkconfig_append: {item}")
 
         os.environ.pop("IDF_TARGET", None)
 
-        # Call set-target
+        # Gọi set-target
         if os.system(f"idf.py set-target {target}") != 0:
-            print("set-target failed", file=sys.stderr)
+            print("set-target không thành công", file=sys.stderr)
             sys.exit(1)
 
-        # Append sdkconfig
+        # Nối sdkconfig
         with Path("sdkconfig").open("a") as f:
             f.write("\n")
-            f.write("# Append by release.py\n")
+            f.write("# Nối bởi release.py\n")
             for append in sdkconfig_append:
                 f.write(f"{append}\n")
-        # Build with macro BOARD_NAME defined to name
+        # Xây dựng với macro BOARD_NAME được định nghĩa thành name
         if os.system(f"idf.py -DBOARD_NAME={name} build") != 0:
-            print("build failed")
+            print("xây dựng không thành công")
             sys.exit(1)
 
         # merge-bin
@@ -199,20 +199,20 @@ def release(board_type: str, config_filename: str = "config.json", *, filter_nam
         zip_bin(name, project_version)
 
 ################################################################################
-# CLI entry
+# Mục nhập CLI
 ################################################################################
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("board", nargs="?", default=None, help="板子类型或 all")
-    parser.add_argument("-c", "--config", default="config.json", help="指定 config 文件名，默认 config.json")
-    parser.add_argument("--list-boards", action="store_true", help="列出所有支持的 board 及变体列表")
-    parser.add_argument("--json", action="store_true", help="配合 --list-boards，JSON 格式输出")
-    parser.add_argument("--name", help="指定变体名称，仅编译匹配的变体")
+    parser.add_argument("board", nargs="?", default=None, help="Loại board hoặc all")
+    parser.add_argument("-c", "--config", default="config.json", help="Chỉ định tên tệp config, mặc định là config.json")
+    parser.add_argument("--list-boards", action="store_true", help="Liệt kê tất cả các board và danh sách biến thể được hỗ trợ")
+    parser.add_argument("--json", action="store_true", help="Kết hợp với --list-boards, đầu ra định dạng JSON")
+    parser.add_argument("--name", help="Chỉ định tên biến thể, chỉ biên dịch biến thể phù hợp")
 
     args = parser.parse_args()
 
-    # List mode
+    # Chế độ danh sách
     if args.list_boards:
         variants = _collect_variants(config_filename=args.config)
         if args.json:
@@ -222,29 +222,29 @@ if __name__ == "__main__":
                 print(f"{v['board']}: {v['name']}")
         sys.exit(0)
 
-    # Current directory firmware packaging mode
+    # Chế độ đóng gói firmware thư mục hiện tại
     if args.board is None:
         merge_bin()
         curr_board_type = get_board_type_from_compile_commands()
         if curr_board_type is None:
-            print("未能从 compile_commands.json 解析 board_type", file=sys.stderr)
+            print("Không thể phân tích cú pháp board_type từ compile_commands.json", file=sys.stderr)
             sys.exit(1)
         project_ver = get_project_version()
         zip_bin(curr_board_type, project_ver)
         sys.exit(0)
 
-    # Compile mode
+    # Chế độ biên dịch
     board_type_input: str = args.board
     name_filter: str | None = args.name
 
-    # Check board_type in CMakeLists
+    # Kiểm tra board_type trong CMakeLists
     if board_type_input != "all" and not _board_type_exists(board_type_input):
-        print(f"[ERROR] main/CMakeLists.txt 中未找到 board_type {board_type_input}", file=sys.stderr)
+        print(f"[LỖI] Không tìm thấy board_type {board_type_input} trong main/CMakeLists.txt", file=sys.stderr)
         sys.exit(1)
 
     variants_all = _collect_variants(config_filename=args.config)
 
-    # Filter board_type list
+    # Lọc danh sách board_type
     target_board_types: set[str]
     if board_type_input == "all":
         target_board_types = {v["board"] for v in variants_all}
@@ -253,10 +253,10 @@ if __name__ == "__main__":
 
     for bt in sorted(target_board_types):
         if not _board_type_exists(bt):
-            print(f"[ERROR] main/CMakeLists.txt 中未找到 board_type {bt}", file=sys.stderr)
+            print(f"[LỖI] Không tìm thấy board_type {bt} trong main/CMakeLists.txt", file=sys.stderr)
             sys.exit(1)
         cfg_path = _BOARDS_DIR / bt / args.config
         if bt == board_type_input and not cfg_path.exists():
-            print(f"开发板 {bt} 未定义 {args.config} 配置文件，跳过")
+            print(f"Board {bt} không có tệp cấu hình {args.config} được định nghĩa, bỏ qua")
             sys.exit(0)
         release(bt, config_filename=args.config, filter_name=name_filter if bt == board_type_input else None)

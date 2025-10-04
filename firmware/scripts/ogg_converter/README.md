@@ -1,29 +1,28 @@
-# ogg_covertor 小智AI OGG 批量转换器
+# ogg_converter - Công cụ chuyển đổi hàng loạt OGG cho Trợ lý AI
 
-本脚本为OGG批量转换工具，支持将输入的音频文件转换为小智可使用的OGG格式
-基于Python第三方库`ffmpeg-python`实现
-支持OGG和音频之间的互转，响度调节等功能
+Tập lệnh này là một công cụ chuyển đổi hàng loạt OGG, hỗ trợ chuyển đổi các tệp âm thanh đầu vào sang định dạng OGG mà trợ lý có thể sử dụng.
+Được xây dựng dựa trên thư viện của bên thứ ba trong Python là `ffmpeg-python`.
+Nó hỗ trợ chuyển đổi lẫn nhau giữa OGG và các định dạng âm thanh khác, cũng như các tính năng như điều chỉnh độ lớn (loudness).
 
-# 创建并激活虚拟环境
+# Tạo và kích hoạt môi trường ảo
 
 ```bash
-# 创建虚拟环境
+# Tạo môi trường ảo
 python -m venv venv
-# 激活虚拟环境
+# Kích hoạt môi trường ảo
 source venv/bin/activate # Mac/Linux
 venv\Scripts\activate # Windows
 ```
 
-# 安装依赖
+# Cài đặt các gói phụ thuộc
 
-请在虚拟环境中执行
+Vui lòng thực thi trong môi trường ảo
 
 ```bash
 pip install ffmpeg-python
 ```
 
-# 运行脚本
+# Chạy tập lệnh
 ```bash
-python ogg_covertor.py
+python ogg_converter.py
 ```
-

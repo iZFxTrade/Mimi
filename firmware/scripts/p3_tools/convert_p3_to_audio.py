@@ -36,7 +36,7 @@ def decode_p3_to_audio(input_file, output_file):
                 pbar.update(4 + opus_len)
 
     if not pcm_frames:
-        raise ValueError("No valid audio data found")
+        raise ValueError("Không tìm thấy dữ liệu âm thanh hợp lệ")
 
     pcm_data = np.concatenate(pcm_frames)
 
@@ -45,7 +45,7 @@ def decode_p3_to_audio(input_file, output_file):
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        print("Usage: python convert_p3_to_audio.py <input.p3> <output.wav>")
+        print("Cách sử dụng: python convert_p3_to_audio.py <đầu_vào.p3> <đầu_ra.wav>")
         sys.exit(1)
 
     decode_p3_to_audio(sys.argv[1], sys.argv[2])

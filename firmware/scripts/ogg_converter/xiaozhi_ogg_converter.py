@@ -8,91 +8,91 @@ import ffmpeg
 class AudioConverterApp:
     def __init__(self, master):
         self.master = master
-        master.title("小智AI OGG音频批量转换工具")
-        master.geometry("680x600")  # 调整窗口高度
+        master.title("Công cụ chuyển đổi hàng loạt âm thanh OGG của AI Xiaozhi")
+        master.geometry("680x600")  # Điều chỉnh chiều cao cửa sổ
 
-        # 初始化变量
+        # Khởi tạo biến
         self.mode = tk.StringVar(value="audio_to_ogg")
         self.output_dir = tk.StringVar()
         self.output_dir.set(os.path.abspath("output"))
         self.enable_loudnorm = tk.BooleanVar(value=True)
         self.target_lufs = tk.DoubleVar(value=-16.0)
 
-        # 创建UI组件
+        # Tạo các thành phần UI
         self.create_widgets()
         self.redirect_output()
 
     def create_widgets(self):
-        # 模式选择
-        mode_frame = ttk.LabelFrame(self.master, text="转换模式")
+        # Chọn chế độ
+        mode_frame = ttk.LabelFrame(self.master, text="Chế độ chuyển đổi")
         mode_frame.grid(row=0, column=0, padx=10, pady=5, sticky="ew")
-        
-        ttk.Radiobutton(mode_frame, text="音频转到OGG", variable=self.mode,
-                        value="audio_to_ogg", command=self.toggle_settings,
-                        width=12).grid(row=0, column=0, padx=5)
-        ttk.Radiobutton(mode_frame, text="OGG转回音频", variable=self.mode,
-                        value="ogg_to_audio", command=self.toggle_settings,
-                        width=12).grid(row=0, column=1, padx=5)
 
-        # 响度设置
+        ttk.Radiobutton(mode_frame, text="Chuyển đổi âm thanh sang OGG", variable=self.mode,
+                        value="audio_to_ogg", command=self.toggle_settings,
+                        width=25).grid(row=0, column=0, padx=5)
+        ttk.Radiobutton(mode_frame, text="Chuyển đổi OGG về âm thanh", variable=self.mode,
+                        value="ogg_to_audio", command=self.toggle_settings,
+                        width=25).grid(row=0, column=1, padx=5)
+
+        # Cài đặt độ lớn
         self.loudnorm_frame = ttk.Frame(self.master)
         self.loudnorm_frame.grid(row=1, column=0, padx=10, pady=5, sticky="ew")
-        
-        ttk.Checkbutton(self.loudnorm_frame, text="启用响度调整", 
-                       variable=self.enable_loudnorm, width=15
+
+        ttk.Checkbutton(self.loudnorm_frame, text="Bật điều chỉnh độ lớn",
+                       variable=self.enable_loudnorm, width=20
                        ).grid(row=0, column=0, padx=2)
-        ttk.Entry(self.loudnorm_frame, textvariable=self.target_lufs, 
+        ttk.Entry(self.loudnorm_frame, textvariable=self.target_lufs,
                  width=6).grid(row=0, column=1, padx=2)
         ttk.Label(self.loudnorm_frame, text="LUFS").grid(row=0, column=2, padx=2)
 
-        # 文件选择
-        file_frame = ttk.LabelFrame(self.master, text="输入文件")
+        # Chọn tệp
+        file_frame = ttk.LabelFrame(self.master, text="Tệp đầu vào")
         file_frame.grid(row=2, column=0, padx=10, pady=5, sticky="nsew")
-        
-        # 文件操作按钮
-        ttk.Button(file_frame, text="选择文件", command=self.select_files,
+
+        # Nút thao tác tệp
+        ttk.Button(file_frame, text="Chọn tệp", command=self.select_files,
                   width=12).grid(row=0, column=0, padx=5, pady=2)
-        ttk.Button(file_frame, text="移除选中", command=self.remove_selected,
+        ttk.Button(file_frame, text="Xóa mục đã chọn", command=self.remove_selected,
                   width=12).grid(row=0, column=1, padx=5, pady=2)
-        ttk.Button(file_frame, text="清空列表", command=self.clear_files,
+        ttk.Button(file_frame, text="Xóa danh sách", command=self.clear_files,
                   width=12).grid(row=0, column=2, padx=5, pady=2)
 
-        # 文件列表（使用Treeview）
-        self.tree = ttk.Treeview(file_frame, columns=("selected", "filename"), 
+        # Danh sách tệp (sử dụng Treeview)
+        self.tree = ttk.Treeview(file_frame, columns=("selected", "filename"),
                                show="headings", height=8)
-        self.tree.heading("selected", text="选中", anchor=tk.W)
-        self.tree.heading("filename", text="文件名", anchor=tk.W)
+        self.tree.heading("selected", text="Chọn", anchor=tk.W)
+        self.tree.heading("filename", text="Tên tệp", anchor=tk.W)
         self.tree.column("selected", width=60, anchor=tk.W)
         self.tree.column("filename", width=600, anchor=tk.W)
         self.tree.grid(row=1, column=0, columnspan=3, sticky="nsew", padx=5, pady=2)
         self.tree.bind("<ButtonRelease-1>", self.on_tree_click)
 
-        # 输出目录
-        output_frame = ttk.LabelFrame(self.master, text="输出目录")
+        # Thư mục đầu ra
+        output_frame = ttk.LabelFrame(self.master, text="Thư mục đầu ra")
         output_frame.grid(row=3, column=0, padx=10, pady=5, sticky="ew")
-        
+
         ttk.Entry(output_frame, textvariable=self.output_dir, width=60
                  ).grid(row=0, column=0, padx=5, sticky="ew")
-        ttk.Button(output_frame, text="浏览", command=self.select_output_dir,
+        ttk.Button(output_frame, text="Duyệt...", command=self.select_output_dir,
                   width=8).grid(row=0, column=1, padx=5)
 
-        # 转换按钮区域
+        # Khu vực nút chuyển đổi
         button_frame = ttk.Frame(self.master)
         button_frame.grid(row=4, column=0, padx=10, pady=10, sticky="ew")
-        
-        ttk.Button(button_frame, text="转换全部文件", command=lambda: self.start_conversion(True),
-                  width=15).pack(side=tk.LEFT, padx=5)
-        ttk.Button(button_frame, text="转换选中文件", command=lambda: self.start_conversion(False),
-                  width=15).pack(side=tk.LEFT, padx=5)
 
-        # 日志区域
-        log_frame = ttk.LabelFrame(self.master, text="日志")
+        ttk.Button(button_frame, text="Chuyển đổi tất cả", command=lambda: self.start_conversion(True),
+                  width=20).pack(side=tk.LEFT, padx=5)
+        ttk.Button(button_frame, text="Chuyển đổi mục đã chọn", command=lambda: self.start_conversion(False),
+                  width=20).pack(side=tk.LEFT, padx=5)
+
+        # Khu vực nhật ký
+        log_frame = ttk.LabelFrame(self.master, text="Nhật ký")
         log_frame.grid(row=5, column=0, padx=10, pady=5, sticky="nsew")
-        
+
         self.log_text = tk.Text(log_frame, height=14, width=80)
         self.log_text.pack(fill=tk.BOTH, expand=True)
 
-        # 配置布局权重
+        # Cấu hình trọng số bố cục
         self.master.columnconfigure(0, weight=1)
         self.master.rowconfigure(2, weight=1)
         self.master.rowconfigure(5, weight=3)
@@ -107,27 +107,27 @@ class AudioConverterApp:
 
     def select_files(self):
         file_types = [
-            ("音频文件", "*.wav *.mogg *.ogg *.flac") if self.mode.get() == "audio_to_ogg" 
-            else ("ogg文件", "*.ogg")
+            ("Tệp âm thanh", "*.wav *.mogg *.ogg *.flac") if self.mode.get() == "audio_to_ogg"
+            else ("Tệp OGG", "*.ogg")
         ]
-        
+
         files = filedialog.askopenfilenames(filetypes=file_types)
         for f in files:
             self.tree.insert("", tk.END, values=("[ ]", os.path.basename(f)), tags=(f,))
 
     def on_tree_click(self, event):
-        """处理复选框点击事件"""
+        """Xử lý sự kiện nhấp vào hộp kiểm"""
         region = self.tree.identify("region", event.x, event.y)
         if region == "cell":
             col = self.tree.identify_column(event.x)
             item = self.tree.identify_row(event.y)
-            if col == "#1":  # 点击的是选中列
+            if col == "#1":  # Nhấp vào cột chọn
                 current_val = self.tree.item(item, "values")[0]
                 new_val = "[√]" if current_val == "[ ]" else "[ ]"
                 self.tree.item(item, values=(new_val, self.tree.item(item, "values")[1]))
 
     def remove_selected(self):
-        """移除选中的文件"""
+        """Xóa các tệp đã chọn"""
         to_remove = []
         for item in self.tree.get_children():
             if self.tree.item(item, "values")[0] == "[√]":
@@ -136,7 +136,7 @@ class AudioConverterApp:
             self.tree.delete(item)
 
     def clear_files(self):
-        """清空所有文件"""
+        """Xóa tất cả các tệp"""
         for item in self.tree.get_children():
             self.tree.delete(item)
 
@@ -162,17 +162,17 @@ class AudioConverterApp:
         sys.stdout = StdoutRedirector(self.log_text)
 
     def start_conversion(self, convert_all):
-        """开始转换"""
+        """Bắt đầu chuyển đổi"""
         input_files = []
         for item in self.tree.get_children():
             if convert_all or self.tree.item(item, "values")[0] == "[√]":
                 input_files.append(self.tree.item(item, "tags")[0])
-        
+
         if not input_files:
-            msg = "没有找到可转换的文件" if convert_all else "没有选中任何文件"
-            messagebox.showwarning("警告", msg)
+            msg = "Không tìm thấy tệp để chuyển đổi" if convert_all else "Chưa chọn tệp nào"
+            messagebox.showwarning("Cảnh báo", msg)
             return
-        
+
         os.makedirs(self.output_dir.get(), exist_ok=True)
 
         try:
@@ -181,48 +181,48 @@ class AudioConverterApp:
                 thread = threading.Thread(target=self.convert_audio_to_ogg, args=(target_lufs, input_files))
             else:
                 thread = threading.Thread(target=self.convert_ogg_to_audio, args=(input_files,))
-            
+
             thread.start()
         except Exception as e:
-            print(f"转换初始化失败: {str(e)}")
+            print(f"Khởi tạo chuyển đổi thất bại: {str(e)}")
 
     def convert_audio_to_ogg(self, target_lufs, input_files):
-        """音频转到ogg转换逻辑"""
+        """Logic chuyển đổi âm thanh sang OGG"""
         for input_path in input_files:
             try:
                 filename = os.path.basename(input_path)
                 base_name = os.path.splitext(filename)[0]
                 output_path = os.path.join(self.output_dir.get(), f"{base_name}.ogg")
-                
-                print(f"正在转换: {filename}")
+
+                print(f"Đang chuyển đổi: {filename}")
                 (
                     ffmpeg
                     .input(input_path)
                     .output(output_path, acodec='libopus', audio_bitrate='16k', ac=1, ar=16000, frame_duration=60)
                     .run(overwrite_output=True)
                 )
-                print(f"转换成功: {filename}\n")
+                print(f"Chuyển đổi thành công: {filename}\n")
             except Exception as e:
-                print(f"转换失败: {str(e)}\n")
+                print(f"Chuyển đổi thất bại: {str(e)}\n")
 
     def convert_ogg_to_audio(self, input_files):
-        """ogg转回音频转换逻辑"""
+        """Logic chuyển đổi OGG về âm thanh"""
         for input_path in input_files:
             try:
                 filename = os.path.basename(input_path)
                 base_name = os.path.splitext(filename)[0]
-                output_path = os.path.join(self.output_dir.get(), f"{base_name}.ogg")
-                
-                print(f"正在转换: {filename}")
+                output_path = os.path.join(self.output_dir.get(), f"{base_name}.wav") # Chuyển đổi OGG sang WAV
+
+                print(f"Đang chuyển đổi: {filename}")
                 (
                     ffmpeg
                     .input(input_path)
-                    .output(output_path, acodec='libopus', audio_bitrate='16k', ac=1, ar=16000, frame_duration=60)
+                    .output(output_path, acodec='pcm_s16le', ar=16000) # Chỉ định codec và tốc độ lấy mẫu
                     .run(overwrite_output=True)
                 )
-                print(f"转换成功: {filename}\n")
+                print(f"Chuyển đổi thành công: {filename}\n")
             except Exception as e:
-                print(f"转换失败: {str(e)}\n")
+                print(f"Chuyển đổi thất bại: {str(e)}\n")
 
 if __name__ == "__main__":
     root = tk.Tk()

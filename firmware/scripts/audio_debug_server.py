@@ -4,51 +4,51 @@ import argparse
 
 
 '''
-  Create a UDP socket and bind it to the server's IP:8000.
-  Listen for incoming messages and print them to the console.
-  Save the audio to a WAV file.
+  Tạo một socket UDP và liên kết nó với IP của máy chủ:8000.
+  Lắng nghe các tin nhắn đến và in chúng ra giao diện điều khiển.
+  Lưu âm thanh vào tệp WAV.
 '''
 def main(samplerate, channels):
-    # Create a UDP socket
+    # Tạo một socket UDP
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     server_socket.bind(('0.0.0.0', 8000))
 
-    # Create WAV file with parameters
+    # Tạo tệp WAV với các tham số
     filename = f"{samplerate}_{channels}.wav"
     wav_file = wave.open(filename, "wb")
-    wav_file.setnchannels(channels)     # channels parameter
-    wav_file.setsampwidth(2)            # 2 bytes per sample (16-bit)
-    wav_file.setframerate(samplerate)   # samplerate parameter
+    wav_file.setnchannels(channels)     # tham số kênh
+    wav_file.setsampwidth(2)            # 2 byte mỗi mẫu (16-bit)
+    wav_file.setframerate(samplerate)   # tham số samplerate
 
-    print(f"Start saving audio from 0.0.0.0:8000 to {filename}...")
+    print(f"Bắt đầu lưu âm thanh từ 0.0.0.0:8000 vào {filename}...")
 
     try:
         while True:
-            # Receive a message from the client
+            # Nhận một tin nhắn từ máy khách
             message, address = server_socket.recvfrom(8000)
-            
-            # Write PCM data to WAV file
+
+            # Ghi dữ liệu PCM vào tệp WAV
             wav_file.writeframes(message)
 
-            # Print length of the message
-            print(f"Received {len(message)} bytes from {address}")
-    
+            # In độ dài của tin nhắn
+            print(f"Đã nhận {len(message)} byte từ {address}")
+
     except KeyboardInterrupt:
-        print("\nStopping recording...")
-    
+        print("\nĐang dừng ghi âm...")
+
     finally:
-        # Close files and socket
+        # Đóng tệp và socket
         wav_file.close()
         server_socket.close()
-        print(f"WAV file '{filename}' saved successfully")
+        print(f"Tệp WAV '{filename}' đã được lưu thành công")
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='UDP音频数据接收器，保存为WAV文件')
-    parser.add_argument('--samplerate', '-s', type=int, default=16000, 
-                        help='采样率 (默认: 16000)')
-    parser.add_argument('--channels', '-c', type=int, default=2, 
-                        help='声道数 (默认: 2)')
-    
+    parser = argparse.ArgumentParser(description='Bộ thu dữ liệu âm thanh UDP, lưu dưới dạng tệp WAV')
+    parser.add_argument('--samplerate', '-s', type=int, default=16000,
+                        help='Tốc độ lấy mẫu (mặc định: 16000)')
+    parser.add_argument('--channels', '-c', type=int, default=2,
+                        help='Số kênh (mặc định: 2)')
+
     args = parser.parse_args()
     main(args.samplerate, args.channels)
