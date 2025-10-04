@@ -3,6 +3,8 @@
 Thư mục này chứa các tập lệnh khác nhau được sử dụng để hỗ trợ quá trình phát triển, xây dựng và quản lý tài nguyên cho firmware. Các tập lệnh này tự động hóa các tác vụ, chuyển đổi tài nguyên và cung cấp các công cụ gỡ lỗi.
 
 ## Cấu trúc thư mục và Chức năng
+
+```
 firmware/scripts/
 │
 ├── Image_Converter/
@@ -46,6 +48,7 @@ firmware/scripts/
 ├── release.py: Tự động hóa quá trình tạo bản phát hành (release) mới.
 ├── sonic_wifi_config.html: Trang HTML để cấu hình Wi-Fi của thiết bị thông qua "Sonic".
 └── versions.py: Quản lý thông tin phiên bản cho các bản dựng firmware.
+```
 
 
 ## Workflow (Luồng công việc)
