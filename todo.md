@@ -65,7 +65,7 @@
 
 ---
 
-## 📝 Ghi chú & Tóm tắt (Kết thúc ngày làm việc)
+## 📝 Ghi chú & Tóm tắt (Lưu trữ từ phiên làm việc trước)
 
 ### Tóm tắt công việc đã làm:
 
@@ -80,14 +80,14 @@
 
 ---
 
-## Cập nhật & Công việc Hiện tại: Xây dựng Máy chủ MCP
+## Cập nhật & Công việc Hiện tại: Xây dựng Máy chủ MCP (Bắt đầu: 2025-10-04 07:50:53 UTC)
 
 *Đây là nhật ký các công việc liên quan đến việc xây dựng máy chủ backend cho dự án.*
 
 - [x] **Khởi tạo cấu trúc dự án:** Tạo thư mục `MCP-Server` với các tệp `main.py`, `requirements.txt`, và tài liệu API.
 - [x] **Hiện thực hóa API OTA (Bản nháp):** Xây dựng endpoint `POST /api/ota/` với Pydantic models và logic giả lập trong `main.py`.
 - [x] **Cấu hình Môi trường Python:** Chỉnh sửa tệp `.idx/dev.nix` để thêm Python 3.11, Pip, extension `ms-python.python`, và cấu hình tự động cài đặt, chạy thử máy chủ.
-- [x] **Lưu trạng thái vào Git:** Thêm, commit (`d7502b1`) và push tất cả các thay đổi lên kho lưu trữ từ xa để đảm bảo an toàn.
+- [x] **Lưu trạng thái vào Git:** Thêm, commit (`f19c6ee`) và push tất cả các thay đổi lên kho lưu trữ từ xa để đảm bảo an toàn.
 - [ ] **Tải lại môi trường & Xác minh:** **CHỜ BẠN TẢI LẠI MÔI TRƯỜNG.** Ngay sau khi tải lại, tôi sẽ kiểm tra lại tệp `todo.md` này và bắt đầu bước tiếp theo.
 - [ ] **Khởi chạy và kiểm thử máy chủ:** Sử dụng cấu hình `previews` đã thiết lập để khởi động máy chủ FastAPI và xác minh nó hoạt động.
 - [ ] **Kiểm thử API Endpoint `/api/ota/`:** Gửi một yêu cầu `curl` hoặc sử dụng một công cụ khác để kiểm tra phản hồi từ logic giả lập.
