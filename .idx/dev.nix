@@ -4,8 +4,11 @@
 
   # Packages to be installed in the environment.
   packages = [
-    # Python environment for the MCP-Server backend
-    pkgs.python3
+    # Create a Python environment with fastapi and uvicorn
+    (pkgs.python3.withPackages (ps: [
+      ps.fastapi
+      ps.uvicorn
+    ]))
   ];
 
   # Environment variables
@@ -17,12 +20,20 @@
       "ms-python.python"
     ];
 
+    # Previews configuration to auto-start the server
+    previews = [
+      {
+        id = "mcp-server";
+        name = "MCP Server";
+        command = "uvicorn MCP-Server.main:app --host 0.0.0.0 --port 8000";
+        manager = "web";
+        port = 8000;
+      }
+    ];
+    
     # Workspace lifecycle hooks
     workspace = {
-      # Run on workspace creation
-      onCreate = {
-        "install-python-deps" = "python3 -m pip install --user -r MCP-Server/requirements.txt";
-      };
+      # The onCreate hook is no longer needed as Nix now manages the packages directly.
     };
   };
 }

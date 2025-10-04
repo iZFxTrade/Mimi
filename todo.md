@@ -1,3 +1,6 @@
+**LƯU Ý CỰC KỲ QUAN TRỌNG DÀNH CHO TRỢ LÝ AI:** Tệp `todo.md` này là nguồn ghi lại toàn bộ lịch sử và tiến độ của dự án. **TUYỆT ĐỐI KHÔNG ĐƯỢC GHI ĐÈ (OVERWRITE) HOẶC XÓA BỎ NỘI DUNG CŨ.** Khi cập nhật, hãy luôn **CHỈ THÊM (APPEND)** thông tin mới vào cuối các phần liên quan, hoặc đánh dấu `[x]` vào các mục đã hoàn thành và bổ sung nhật ký công việc. Việc ghi đè sẽ làm mất toàn bộ lịch sử và gây gián đoạn nghiêm trọng cho dự án.
+
+---
 # ✅ Danh sách công việc dự án MiMi
 
 Đây là danh sách các công việc cần làm để hoàn thành dự án, dựa trên `Roadmap ToDo` trong file README.md. Tôi sẽ thực hiện tuần tự, chi tiết và đánh dấu khi hoàn thành.
@@ -92,3 +95,16 @@
 - [ ] **Tải lại môi trường & Xác minh:** **CHỜ BẠN TẢI LẠI MÔI TRƯỜNG.** Sau khi tải lại, tôi sẽ bắt đầu khởi chạy máy chủ.
 - [ ] **Khởi chạy và kiểm thử máy chủ:** Sử dụng cấu hình `previews` đã thiết lập để khởi động máy chủ FastAPI và xác minh nó hoạt động.
 - [ ] **Kiểm thử API Endpoint `/api/ota/`:** Gửi một yêu cầu `curl` hoặc sử dụng một công cụ khác để kiểm tra phản hồi từ logic giả lập.
+
+---
+
+## LƯU Ý QUAN TRỌNG VỀ ĐỊNH HƯỚNG DỰ ÁN
+
+**Mục tiêu hiện tại:** Tập trung 100% vào việc hoàn thiện mã nguồn cho các tính năng đã được vạch ra trong danh sách công việc (ToDo list).
+
+**Quy trình làm việc:**
+*   **KHÔNG cài đặt** bất kỳ trình biên dịch, toolchain (như ESP-IDF), hoặc các công cụ phụ trợ nào trong giai đoạn này.
+*   Mọi nỗ lực sẽ tập trung vào việc viết, chỉnh sửa và hoàn thiện các tệp mã nguồn (`.cc`, `.h`, `.py`, v.v.).
+*   Giai đoạn **biên dịch (build), gỡ lỗi (debug) và nạp firmware (flash)** sẽ chỉ được bắt đầu sau khi tất cả các mục trong `todo.md` được đánh dấu là hoàn thành.
+
+Lý do: Để đảm bảo luồng phát triển được tập trung, tránh phát sinh các vấn.đề về môi trường và công cụ khi các tính năng cốt lõi chưa hoàn thiện.
