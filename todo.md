@@ -91,8 +91,12 @@
 - [x] **Hiện thực hóa API OTA (Bản nháp):** Xây dựng endpoint `POST /api/ota/` với Pydantic models và logic giả lập trong `main.py`.
 - [x] **Cấu hình Môi trường Python:** Chỉnh sửa tệp `.idx/dev.nix` để thêm Python 3.11, Pip, extension `ms-python.python`, và cấu hình tự động cài đặt, chạy thử máy chủ.
 - [x] **Lưu trạng thái vào Git:** Thêm, commit (`f19c6ee`) và push tất cả các thay đổi lên kho lưu trữ từ xa để đảm bảo an toàn.
-- [x] **Sửa lỗi Cấu hình Môi trường:** Phát hiện và sửa lỗi cú pháp trong tệp `.idx/dev.nix` sau khi môi trường không khởi động được. Cấu hình `previews` đã được điều chỉnh lại cho chính xác.
-- [ ] **Tải lại môi trường & Xác minh:** **CHỜ BẠN TẢI LẠI MÔI TRƯỜNG.** Sau khi tải lại, tôi sẽ bắt đầu khởi chạy máy chủ.
+- [x] **Sửa lỗi Cấu hình Môi trường (lần 1):** Phát hiện và sửa lỗi cú pháp trong tệp `.idx/dev.nix` sau khi môi trường không khởi động được. Cấu hình `previews` đã được điều chỉnh lại cho chính xác.
+- [x] **Sửa lỗi Thiếu Thư viện Python (lần 2):**
+    - **Vấn đề:** Lệnh `python3 -m uvicorn MCP-Server.main:app` thất bại với lỗi `No module named uvicorn`.
+    - **Nguyên nhân:** File `.idx/dev.nix` chỉ cài đặt Python mà không cài đặt các thư viện trong `requirements.txt`.
+    - **Giải pháp:** Cập nhật `.idx/dev.nix` để tự động tạo môi trường ảo (`.venv`) và chạy `pip install -r MCP-Server/requirements.txt` khi khởi động hoặc khi file thay đổi. Cũng đã cấu hình sẵn một preview để chạy server.
+- [ ] **Tải lại môi trường & Xác minh:** **CHỜ BẠN TẢI LẠI MÔI TRƯỜDNG.** Sau khi tải lại, tôi sẽ sử dụng preview đã cấu hình để khởi chạy và xác minh máy chủ.
 - [ ] **Khởi chạy và kiểm thử máy chủ:** Sử dụng cấu hình `previews` đã thiết lập để khởi động máy chủ FastAPI và xác minh nó hoạt động.
 - [ ] **Kiểm thử API Endpoint `/api/ota/`:** Gửi một yêu cầu `curl` hoặc sử dụng một công cụ khác để kiểm tra phản hồi từ logic giả lập.
 
