@@ -37,6 +37,86 @@
 
 ---
 
+## 🚀 Hướng dẫn triển khai
+
+Để đưa MiMi vào cuộc sống trên thiết bị ESP32-CYD của bạn, hãy làm theo các bước dưới đây.
+
+### Phương pháp 1: Sử dụng WebFlasher (Đơn giản nhất)
+
+> **Lưu ý:** Tính năng này đang được phát triển và sẽ sớm ra mắt!
+
+Chúng tôi đang phát triển một công cụ WebFlasher cho phép bạn nạp firmware trực tiếp từ trình duyệt mà không cần cài đặt môi trường lập trình phức tạp.
+
+1.  Kết nối ESP32-CYD với máy tính của bạn qua cổng USB.
+2.  Truy cập trang WebFlasher của dự án (sẽ được cập nhật).
+3.  Chọn đúng cổng COM và nhấn "Flash".
+4.  Chờ quá trình hoàn tất.
+
+### Phương pháp 2: Triển khai thủ công (Dành cho nhà phát triển)
+
+Nếu bạn là nhà phát triển và muốn tùy chỉnh mã nguồn, bạn có thể làm theo cách thủ công.
+
+**Yêu cầu:**
+
+*   **ESP-IDF:** Cài đặt [môi trường phát triển của Espressif](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/get-started/).
+*   **Git:** Để sao chép mã nguồn dự án.
+
+**Các bước thực hiện:**
+
+1.  **Sao chép mã nguồn:**
+    ```bash
+    git clone https://github.com/iZFxTrade/Mimi.git
+    cd Mimi/firmware
+    ```
+
+2.  **Cấu hình thiết bị:**
+    Chạy menu cấu hình để chọn đúng bo mạch và các cài đặt khác.
+    ```bash
+    idf.py set-target esp32
+    idf.py menuconfig
+    ```
+    *Trong menuconfig, hãy chắc chắn rằng bạn đã cấu hình đúng các chân (pin) cho màn hình, cảm ứng và các ngoại vi khác nếu bạn dùng phần cứng khác ESP32-CYD.*
+
+3.  **Biên dịch và Nạp firmware:**
+    ```bash
+    idf.py build flash monitor
+    ```
+
+### Chuẩn bị Thẻ nhớ (SD Card)
+
+Sau khi nạp firmware, bạn cần chuẩn bị thẻ nhớ để MiMi có thể hoạt động.
+
+1.  Định dạng thẻ nhớ theo chuẩn `FAT32`.
+2.  Tạo cấu trúc thư mục và các tệp cấu hình như trong phần [Cấu trúc dữ liệu trên thẻ SD](#-cấu-trúc-dữ-liệu-trên-thẻ-sd).
+3.  **Quan trọng:** Tạo tệp `config.json` ở thư mục gốc của thẻ nhớ và điền thông tin Wi-Fi, MQTT, Telegram của bạn.
+4.  Cắm thẻ nhớ vào thiết bị và khởi động lại.
+
+---
+
+## 📈 Roadmap (Lộ trình phát triển)
+
+Đây là những tính năng và cải tiến mà chúng tôi dự định sẽ thực hiện trong tương lai.
+
+*   [ ] **🚀 WebFlasher cho ESP32:**
+    *   **Mục tiêu:** Đơn giản hóa tối đa quá trình nạp firmware cho người dùng cuối. Người dùng chỉ cần kết nối thiết bị và flash trực tiếp từ trình duyệt mà không cần cài đặt công cụ.
+
+*   [ ] **🗣️ Cải thiện Nhận dạng Giọng nói:**
+    *   **Mục tiêu:** Tích hợp các mô hình nhận dạng giọng nói cục bộ (local) để giảm độ trễ và tăng tính riêng tư.
+
+*   [ ] **🌐 Hỗ trợ Đa ngôn ngữ:**
+    *   **Mục tiêu:** Mở rộng khả năng của MiMi để hỗ trợ các ngôn ngữ khác ngoài tiếng Việt.
+
+*   [ ] **📱 Ứng dụng di động đồng hành (Companion App):**
+    *   **Mục tiêu:** Xây dựng một ứng dụng trên điện thoại để dễ dàng cấu hình, quản lý tệp trên thẻ nhớ và tương tác với MiMi.
+
+*   [ ] **🧩 Mở rộng tích hợp Smarthome:**
+    *   **Mục tiêu:** Hỗ trợ thêm nhiều loại thiết bị và kịch bản tự động hóa phức tạp hơn với Home Assistant và các nền tảng khác.
+
+*   [ ] **🎨 Giao diện người dùng nâng cao:**
+    *   **Mục tiêu:** Cải tiến UI/UX trên màn hình của thiết bị, thêm nhiều hiệu ứng và tùy chọn cá nhân hóa hơn.
+
+---
+
 ## 📂 Cấu trúc dữ liệu trên thẻ SD
 
 Thư mục gốc của thẻ SD sẽ chứa các file cấu hình và thư mục dữ liệu sau:
@@ -148,13 +228,3 @@ Lưu trữ các hành động tùy chỉnh do người dùng tạo.
   }
 ]
 ```
-
----
-
-## 📈 Roadmap ToDo
-
-*(Roadmap không thay đổi)*
-
----
-
-*Các phần Hướng dẫn triển khai sẽ được giữ nguyên.*
