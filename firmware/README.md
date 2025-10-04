@@ -4,24 +4,25 @@ Thư mục này chứa mã nguồn cho firmware của thiết bị, chạy trên
 
 ## Cấu trúc thư mục chi tiết
 
-`firmware/`
+```
+firmware/
 │
-├── **CMakeLists.txt**: Tệp cấu hình CMake chính cho toàn bộ firmware, điều phối việc biên dịch các thành phần và mã nguồn.
+├── CMakeLists.txt: Tệp cấu hình CMake chính cho toàn bộ firmware, điều phối việc biên dịch các thành phần và mã nguồn.
 │
-├── **LICENSE**: Tệp giấy phép phần mềm cho mã nguồn firmware.
+├── LICENSE: Tệp giấy phép phần mềm cho mã nguồn firmware.
 │
-├── **README.md**: (Tệp này) - Cung cấp tổng quan về cấu trúc, cách xây dựng và luồng hoạt động của firmware.
+├── README.md: (Tệp này) - Cung cấp tổng quan về cấu trúc, cách xây dựng và luồng hoạt động của firmware.
 │
-├── **sdkconfig.defaults***: Chứa các giá trị cấu hình mặc định cho ESP-IDF. Các giá trị này có thể được ghi đè bởi cấu hình của từng bo mạch.
+├── sdkconfig.defaults*: Chứa các giá trị cấu hình mặc định cho ESP-IDF. Các giá trị này có thể được ghi đè bởi cấu hình của từng bo mạch.
 │
-├── **docs/**: Chứa tài liệu thiết kế, hướng dẫn bổ sung, và các sơ đồ liên quan đến firmware.
+├── docs/: Chứa tài liệu thiết kế, hướng dẫn bổ sung, và các sơ đồ liên quan đến firmware.
 │
-├── **main/**: Thư mục cốt lõi chứa logic chính của ứng dụng và các module chức năng. (Xem `main/README.md` để biết thêm chi tiết).
+├── main/: Thư mục cốt lõi chứa logic chính của ứng dụng và các module chức năng. (Xem `main/README.md` để biết thêm chi tiết).
 │
-├── **partitions/**: Chứa các tệp `.csv` định nghĩa bảng phân vùng bộ nhớ flash cho các kích thước và yêu cầu khác nhau. (Xem `partitions/README.md` để biết thêm chi tiết).
+├── partitions/: Chứa các tệp `.csv` định nghĩa bảng phân vùng bộ nhớ flash cho các kích thước và yêu cầu khác nhau. (Xem `partitions/README.md` để biết thêm chi tiết).
 │
-└── **scripts/**: Chứa các tập lệnh Python và shell để tự động hóa các tác vụ như chuyển đổi tài nguyên, xây dựng và phát hành. (Xem `scripts/README.md` để biết thêm chi tiết).
-
+└── scripts/: Chứa các tập lệnh Python và shell để tự động hóa các tác vụ như chuyển đổi tài nguyên, xây dựng và phát hành. (Xem `scripts/README.md` để biết thêm chi tiết).
+```
 
 ## Luồng công việc & Xây dựng
 
