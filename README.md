@@ -6,6 +6,12 @@
 
 ---
 
+## 📖 Bản thiết kế dự án (Project Blueprint)
+
+Để có cái nhìn tổng quan về mặt kỹ thuật, kiến trúc, cấu trúc tệp và luồng công việc của dự án, vui lòng tham khảo **[Bản thiết kế dự án (PROJECT_BLUEPRINT.md)](./PROJECT_BLUEPRINT.md)**. Tài liệu này được thiết kế đặc biệt để cung cấp thông tin chuyên sâu cho các nhà phát triển và trợ lý AI.
+
+---
+
 ## ✨ Tính năng chính
 
 *   💖 **Người bạn đồng hành trong gia đình**

@@ -1,23 +1,47 @@
 # Tổng quan về Firmware
 
-Thư mục này chứa mã nguồn cho firmware của MiMi, chạy trên vi điều khiển ESP32. Firmware được xây dựng dựa trên framework [ESP-IDF](https://github.com/espressif/esp-idf) của Espressif và sử dụng nhiều thư viện khác nhau để quản lý các chức năng như âm thanh, hiển thị, kết nối mạng và các chức năng cốt lõi của ứng dụng.
+Thư mục này chứa mã nguồn cho firmware của thiết bị, chạy trên các vi điều khiển dòng ESP32. Firmware được xây dựng dựa trên framework [ESP-IDF](https://github.com/espressif/esp-idf) của Espressif và sử dụng nhiều thư viện khác nhau để quản lý các chức năng như âm thanh, hiển thị, kết nối mạng và các chức năng cốt lõi của ứng dụng.
 
-## Cấu trúc thư mục
+## Cấu trúc thư mục chi tiết
 
-- **`main/`**: Chứa mã nguồn chính của ứng dụng.
-  - **`application.cc/h`**: Logic cốt lõi của ứng dụng, quản lý trạng thái, sự kiện và tương tác giữa các thành phần khác nhau.
-  - **`audio/`**: Quản lý việc thu, xử lý và phát lại âm thanh. Bao gồm các trình điều khiển cho codec âm thanh, xử lý tín hiệu (như khử tiếng vọng) và mã hóa/giải mã Opus.
-  - **`boards/`**: Các tệp cấu hình dành riêng cho phần cứng cho các bo mạch ESP32 khác nhau được hỗ trợ.
-  - **`display/`**: Quản lý giao diện người dùng (UI) bằng thư viện đồ họa LVGL. Điều này bao gồm hiển thị khuôn mặt cảm xúc, menu cài đặt và các yếu tố hình ảnh khác.
-  - **`network/`**: Xử lý kết nối Wi-Fi và giao tiếp với các dịch vụ back-end (ví dụ: MQTT, WebSocket).
-  - **`utils/`**: Các chức năng và lớp tiện ích được sử dụng trong toàn bộ dự án.
-- **`components/`**: Chứa các thành phần và thư viện của bên thứ ba được dự án sử dụng. Điều này có thể bao gồm các trình điều khiển tùy chỉnh, các thư viện được port hoặc các thành phần dành riêng cho dự án không phải là một phần của ESP-IDF cốt lõi.
-- **`partitions/`**: Sơ đồ bảng phân vùng cho các cấu hình flash khác nhau (ví dụ: 8MB, 16MB). Điều này xác định cách bộ nhớ flash của ESP32 được phân bổ cho các phần khác nhau của ứng dụng (ví dụ: NVS, OTA, ứng dụng chính, lưu trữ tệp).
+`firmware/`
+│
+├── **CMakeLists.txt**: Tệp cấu hình CMake chính cho toàn bộ firmware, điều phối việc biên dịch các thành phần và mã nguồn.
+│
+├── **LICENSE**: Tệp giấy phép phần mềm cho mã nguồn firmware.
+│
+├── **README.md**: (Tệp này) - Cung cấp tổng quan về cấu trúc, cách xây dựng và luồng hoạt động của firmware.
+│
+├── **sdkconfig.defaults***: Chứa các giá trị cấu hình mặc định cho ESP-IDF. Các giá trị này có thể được ghi đè bởi cấu hình của từng bo mạch.
+│
+├── **docs/**: Chứa tài liệu thiết kế, hướng dẫn bổ sung, và các sơ đồ liên quan đến firmware.
+│
+├── **main/**: Thư mục cốt lõi chứa logic chính của ứng dụng và các module chức năng. (Xem `main/README.md` để biết thêm chi tiết).
+│
+├── **partitions/**: Chứa các tệp `.csv` định nghĩa bảng phân vùng bộ nhớ flash cho các kích thước và yêu cầu khác nhau. (Xem `partitions/README.md` để biết thêm chi tiết).
+│
+└── **scripts/**: Chứa các tập lệnh Python và shell để tự động hóa các tác vụ như chuyển đổi tài nguyên, xây dựng và phát hành. (Xem `scripts/README.md` để biết thêm chi tiết).
 
-## Các thành phần chính
 
-- **Application (`application.cc`)**: Đóng vai trò là điểm vào chính và bộ điều phối trung tâm của firmware. Nó khởi tạo tất cả các dịch vụ khác và quản lý vòng đời của ứng dụng.
-- **AudioService (`audio/audio_service.cc`)**: Chịu trách nhiệm về toàn bộ đường ống âm thanh, từ việc thu dữ liệu PCM thô từ micrô đến mã hóa nó thành Opus để truyền và giải mã các luồng âm thanh đến để phát lại.
-- **Display (`display/display.cc`)**: Quản lý mọi thứ được vẽ trên màn hình. Nó sử dụng LVGL để tạo một giao diện người dùng phong phú và tương tác.
-- **Network Protocols (`network/`)**: Triển khai các giao thức truyền thông (MQTT và WebSocket) để tương tác với máy chủ. Chúng xử lý việc trao đổi tin nhắn điều khiển và truyền phát dữ liệu âm thanh.
-- **Board Support Package (BSP) (`boards/`)**: Lớp trừu tượng hóa phần cứng cho phép firmware chạy trên các thiết kế phần cứng khác nhau với những thay đổi tối thiểu. Mỗi bo mạch có cấu hình chân và trình điều khiển ngoại vi riêng.
+## Luồng công việc & Xây dựng
+
+1.  **Cài đặt Môi trường**: Bạn cần cài đặt và cấu hình môi trường phát triển ESP-IDF theo hướng dẫn của Espressif.
+
+2.  **Chọn Bo mạch và Biên dịch**: Hệ thống xây dựng sử dụng CMake. Để biên dịch cho một bo mạch cụ thể, bạn cần chỉ định tên bo mạch đó. Ví dụ, để xây dựng cho `esp-box-3`:
+
+    ```sh
+    # Tùy chọn 1: Sử dụng idf.py với biến tùy chỉnh
+    idf.py set-target esp32s3 -D BOARD_NAME="esp-box-3"
+    idf.py build
+    
+    # Tùy chọn 2: Sử dụng tập lệnh phát hành được cung cấp
+    python scripts/release.py esp-box-3
+    ```
+
+3.  **Quản lý Tài nguyên**: Các tài nguyên trong `main/assets/` không được biên dịch trực tiếp. Thay vào đó, chúng được đóng gói vào một hình ảnh hệ thống tệp (SPIFFS hoặc LittleFS) bằng cách sử dụng các tập lệnh trong `scripts/spiffs_assets/`. Hình ảnh này sau đó được nạp vào phân vùng `spiffs` trên bộ nhớ flash của thiết bị.
+
+## Lưu ý Quan trọng khi Tùy chỉnh Bo mạch
+
+> **Cảnh báo**: Đối với các bảng mạch phát triển tùy chỉnh, khi cấu hình IO khác với bảng mạch ban đầu, tuyệt đối không ghi đè trực tiếp lên cấu hình của bảng mạch ban đầu để biên dịch firmware. Phải tạo một loại bảng mạch mới, hoặc phân biệt thông qua các cấu hình `name` và macro sdkconfig khác nhau trong tệp `config.json`. Sử dụng `python scripts/release.py [tên_thư_mục_bảng_mạch]` để biên dịch và đóng gói firmware.
+> 
+> Nếu bạn ghi đè trực tiếp lên cấu hình ban đầu, trong tương lai khi nâng cấp OTA, firmware tùy chỉnh của bạn có thể bị ghi đè bởi firmware tiêu chuẩn của bảng mạch ban đầu, dẫn đến thiết bị của bạn không hoạt động bình thường. Mỗi bảng mạch phát triển có một mã định danh duy nhất và kênh nâng cấp firmware tương ứng, việc duy trì tính duy nhất của mã định danh bảng mạch là rất quan trọng.
