@@ -29,9 +29,11 @@
 
     # Web preview for the MCP-Server
     previews = {
-      enable = true;
-      command = [ "python3" "-m" "uvicorn" "MCP-Server.main:app" "--host" "0.0.0.0" "--port" "$PORT" ];
-      manager = "web";
+      main = {
+        enable = true;
+        command = [ "python3" "-m" "uvicorn" "MCP-Server.main:app" "--host" "0.0.0.0" "--port" "$PORT" ];
+        manager = "web";
+      };
     };
 
     # Workspace lifecycle hooks
