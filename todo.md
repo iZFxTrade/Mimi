@@ -131,7 +131,7 @@ Lý do: Để đảm bảo luồng phát triển được tập trung, tránh ph
 
 ---
 
-## Cập nhật & Công việc Hiện tại: Xây dựng Admin Dashboard (2024-05-24)
+## Cập nhật & Công việc Hiện tại: Xây dựng Admin Dashboard (2025-10-04)
 
 *Tập trung vào việc xây dựng giao diện quản trị cho MCP-Server.*
 

@@ -9,7 +9,7 @@ Cung cấp một giao diện web trực quan cho phép quản trị viên (Admin
 - **Quản lý Toàn diện (CRUD):** Thêm, Sửa, Xóa và Xem tất cả các tài nguyên của hệ thống, bao gồm Users, Assistants, Homes, Devices, AI Models, v.v.
 - **Tương tác & Thử nghiệm:** Cung cấp một khung chat tích hợp để có thể tương tác trực tiếp với các trợ lý AI đã được cấu hình, giúp cho việc thử nghiệm và gỡ lỗi trở nên nhanh chóng.
 
-## Tình trạng hiện tại (2024-05-24)
+## Tình trạng hiện tại (2025-10-04)
 
 - **Layout mong muốn:** Một giao diện 3 cột:
     1.  **Sidebar (trái):** Menu điều hướng chính.
