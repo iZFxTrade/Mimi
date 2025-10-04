@@ -9,9 +9,6 @@ public:
     void OnShow() override;
     void OnHide() override;
 
-    // We can add functions here later to get/set values
-    // For example: const char* GetWifiSsid();
-
 private:
     lv_obj_t* container_ = nullptr;
 
@@ -20,6 +17,10 @@ private:
     lv_obj_t* wifi_pass_ta_ = nullptr;
     lv_obj_t* mqtt_host_ta_ = nullptr;
     lv_obj_t* telegram_token_ta_ = nullptr;
+
+    // Server Tab
+    lv_obj_t* server_dd_ = nullptr;
+    lv_obj_t* server_custom_url_ta_ = nullptr;
 
     // Robot Tab
     lv_obj_t* robot_speed_slider_ = nullptr;

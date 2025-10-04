@@ -12,68 +12,11 @@
 
 ---
 
-## Giai đoạn 1: Tích hợp phần cứng và UI cơ bản
+## Giai đoạn 1: Xây dựng Máy chủ MCP (MCP-Server)
 
--   [x] **1.1. Tích hợp `mimi-cyd` vào hệ thống build:**
-    -   [x] **1.1.1.** Chỉnh sửa file `firmware/main/Kconfig.projbuild` để thêm lựa chọn `BOARD_TYPE_MIMI_CYD`.
--   [x] **1.2. Hoàn thiện lớp Board `mimi-cyd`:**
-    -   [x] Implement lớp `MimiCydBoard` và các phương thức cần thiết.
--   [x] **1.3. Xây dựng bộ giao diện người dùng (UI):**
-    -   [x] **1.3.1. Màn hình Biểu cảm Trợ lý (Assistant Face):** Giao diện tương tác chính, hiển thị biểu cảm và cho phép tương tác chạm.
-    -   [x] **1.3.2. Màn hình Trò chuyện (Chat):** Hiển thị lịch sử hội thoại giữa người dùng và AI.
-    -   [x] **1.3.3. Màn hình Tổng quan (Dashboard):** Tích hợp đồng hồ, lịch/thời khóa biểu và thời tiết.
-    -   [ ] **1.3.4. Màn hình Gia sư (Learning Tutor):** Giao diện dành riêng cho việc học tập.
-    -   [x] **1.3.5. Màn hình Báo cáo & Thống kê (Reports & Stats):** Hiển thị tiến độ, kết quả học tập và các số liệu thống kê.
-    -   [ ] **1.3.6. Màn hình Nhà thông minh (Smart Home):** Giao diện điều khiển các thiết bị smarthome.
-    -   [x] **1.3.7. Màn hình Media Player:** Giao diện điều khiển nhạc/podcast.
-    -   [ ] **1.3.8. Màn hình Cài đặt (Settings):** Cấu hình hệ thống và các kết nối.
-    -   [x] **1.3.9. Màn hình Tính năng Mở rộng (Extensions):** Giao diện quản lý các hành động tùy chỉnh.
-
----
-
-## Giai đoạn 2 – Thông minh & Kết nối
-
--   [ ] **2.1. Tích hợp AI Backend:**
-    -   [ ] Kết nối ASR/TTS.
--   [ ] **2.2. Cá nhân hóa người dùng:**
-    -   [ ] Xây dựng cấu trúc profile và lưu tiến trình học trên thẻ SD.
--   [ ] **2.3. Tích hợp Telegram (Cốt lõi):**
-    -   [ ] Xây dựng Module Telegram để gửi cảnh báo và nhận lệnh.
--   [ ] **2.4. Tích hợp Smarthome:**
-    -   [ ] Thiết lập kết nối MQTT tới Home Assistant.
-
----
-
-## Giai đoạn 3 – Nền tảng Mở rộng
-
--   [ ] **3.1. Xây dựng Hệ thống Mở rộng (Custom Actions):**
-    -   [ ] **3.1.1. Thiết kế Cấu trúc Dữ liệu:**
-        -   [ ] Định nghĩa cấu trúc file `actions.json` trên thẻ SD để lưu các hành động tùy chỉnh (tên lệnh, phương thức, URL, mẫu body).
-    -   [ ] **3.1.2. Giao diện Người dùng (UI):**
-        -   [ ] Tạo màn hình "Cài đặt" -> "Hành động tùy chỉnh".
-        -   [ ] UI để thêm/sửa/xóa các hành động (nhập tên lệnh, URL, v.v.).
-    -   [ ] **3.1.3. Service Quản lý Hành động:**
-        -   [ ] Viết lớp `ActionService` để đọc/ghi file `actions.json`.
-        -   [ ] Cung cấp phương thức để tìm kiếm một hành động dựa trên lệnh thoại.
-    -   [ ] **3.1.4. Tích hợp vào Luồng AI:**
-        -   [ ] Sửa đổi luồng xử lý sau khi nhận diện giọng nói (ASR).
-        -   [ ] Ưu tiên kiểm tra xem lệnh thoại có khớp với một hành động tùy chỉnh nào không.
-        -   [ ] Nếu có, thực hiện gọi HTTP request theo cấu hình và xử lý kết quả trả về (đọc to bằng TTS).
-
--   [ ] **3.2. Hoàn thiện Robot mở rộng (ESP32-CAM):**
-    -   [ ] Tích hợp sâu hơn với hệ thống cảnh báo và hành động tùy chỉnh (ví dụ: hành động "chụp ảnh" sẽ kích hoạt ESP32-CAM và gửi ảnh qua Telegram).
-
----
-
-## 📝 Ghi chú & Tóm tắt (Kết thúc ngày làm việc)
-
-### Tóm tắt công việc đã làm:
-
-*   **Hoàn thành Giao diện Người dùng (UI) cho Giai đoạn 1:**
-    *   Tích hợp thành công thư viện vẽ khuôn mặt vector `emotion_custom.c` vào `AssistantFaceView`, thay thế hoàn toàn giao diện cũ.
-    *   Khuôn mặt trợ lý giờ đây có thể biểu cảm (`happy`, `sad`, `thinking`...) và phản hồi lại các tương tác chạm (xoa đầu, chọc mũi).
-    *   Tạo và triển khai mã nguồn cho các màn hình giao diện chính: `HomeView` (Dashboard), `ReportsView`, `MediaView`, `ExtensionsView`, và `ChatView`.
-
-### Vấn đề tồn đọng & Việc cần làm tiếp theo:
-
-*   **[QUAN TRỌNG] Chưa Biên dịch (Build) Dự án:** Toàn bộ mã nguồn mới được viết và tích hợp nhưng **chưa được biên dịch và kiểm tra**. Đây là ưu tiên hàng đầu cho ngày làm việc tiếp theo để phát hiện và sửa các lỗi cú pháp, lỗi liên kết (linker errors) hoặc các vấn đề tương thích khác. Cần chạy lệnh `idf.py build` để bắt đầu.
+-   [x] **Khởi tạo cấu trúc dự án máy chủ:** Tạo thư mục `MCP-Server` với `main.py` và `requirements.txt`.
+-   [x] **Hiện thực hóa API và cấu trúc dữ liệu:** Xây dựng endpoint `/api/ota/` với Pydantic models và logic giả lập trong `main.py`.
+-   [x] **Cấu hình môi trường phát triển Python:** Chỉnh sửa tệp `.idx/dev.nix` để cài đặt Python, Pip và tự động hóa việc cài đặt thư viện cũng như chạy máy chủ.
+-   [ ] **Tải lại môi trường và khởi chạy máy chủ:** *BẠN CẦN TẢI LẠI MÔI TRƯỜNG NGAY BÂY GIỜ.* Sau khi tải lại, tôi sẽ xác minh môi trường và khởi chạy máy chủ FastAPI bằng trình xem trước (Preview).
+-   [ ] **Kiểm thử API Endpoint `/api/ota/`:** Gửi yêu cầu mẫu đến máy chủ đang chạy để xác nhận nó hoạt động đúng như logic giả lập.
+-   [ ] **Hiện thực hóa logic nghiệp vụ thực tế:** Thay thế logic giả bằng logic thực, bao gồm việc truy vấn cơ sở dữ liệu để tìm phiên bản firmware mới nhất.
