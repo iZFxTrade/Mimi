@@ -1,43 +1,31 @@
-# Máy chủ Trung gian MiMi (MiMi Control Protocol Server)
+# Máy chủ Giao thức Ngữ cảnh Mô hình (Model Context Protocol Server)
 
-Thư mục này chứa mã nguồn và tài liệu để triển khai máy chủ trung gian cho trợ lý AI MiMi.
+Thư mục này chứa mã nguồn và tài liệu để triển khai máy chủ trung gian cho các trợ lý AI.
 
 ## 🎯 Mục đích
 
 Máy chủ này đóng vai trò là "bộ não" backend, có các nhiệm vụ chính:
 
-1.  **Cung cấp Cấu hình (OTA & Provisioning):** Khi thiết bị ESP32 khởi động, nó sẽ kết nối đến máy chủ này để:
+1.  **Cung cấp & Định danh (Provisioning & Identity):** Khi một thiết bị IoT khởi động, nó sẽ kết nối đến máy chủ này để:
     *   Kiểm tra phiên bản firmware mới (OTA).
-    *   Lấy thông tin cấu hình kết nối cho dịch vụ AI (MQTT hoặc WebSocket).
+    *   Lấy thông tin cấu hình kết nối cho các dịch vụ cốt lõi (MQTT, WebSocket).
+    *   Đăng ký thông tin định danh của thiết bị (`Device-ID`) và tạo một "Hồ sơ Thiết bị" (`DeviceProfile`) để lưu trữ mọi cấu hình liên quan.
 
-2.  **Trung gian Giao tiếp với AI:**
-    *   Nhận âm thanh giọng nói từ thiết bị ESP32.
-    *   Gửi âm thanh đến dịch vụ Speech-to-Text (STT) để chuyển thành văn bản.
-    *   Gửi văn bản đến các mô hình ngôn ngữ lớn (LLM) như OpenAI, Google Gemini, v.v.
-    *   Nhận phản hồi văn bản từ LLM.
-    *   Sử dụng dịch vụ Text-to-Speech (TTS) để chuyển phản hồi thành âm thanh.
-    *   Gửi lại cả âm thanh và văn bản cho thiết bị ESP32.
+2.  **Trung gian Giao tiếp AI (Kiến trúc Mở):**
+    *   Nhận luồng âm thanh (định dạng **Opus**) từ thiết bị và xử lý qua chuỗi STT -> LLM -> TTS.
+    *   Hỗ trợ kiến trúc AI linh hoạt, cho phép người dùng tự do lựa chọn nhà cung cấp dịch vụ (OpenAI, Google Gemini, VietTTS, Ollama, v.v.) cho từng thành phần trong hồ sơ của thiết bị.
 
-3.  **Quản lý Logic Phụ trợ:**
-    *   Xử lý các hành động tùy chỉnh (Custom Actions).
-    *   Tích hợp với các dịch vụ bên thứ ba (Telegram, Home Assistant, n8n...).
-    *   Lưu trữ dữ liệu người dùng và tiến trình học tập.
+3.  **Quản lý Ngữ cảnh Đa tầng (Multi-Layered Context Management):**
+    *   **Ngữ cảnh Người dùng:** Máy chủ nhận dạng **từng người dùng** (ví dụ: qua ID Telegram hoặc `user_id` do thiết bị cung cấp) và lưu trữ lịch sử hội thoại riêng cho mỗi người trong `UserProfile`. Trợ lý có thể "nhớ" các cuộc trò chuyện trong quá khứ với từng thành viên.
+    *   **Ngữ cảnh Bền bỉ & Độc lập:** Lịch sử hội thoại được lưu trữ ở một định dạng trung gian (JSON). Điều này có nghĩa là khi người dùng thay đổi nhà cung cấp LLM (ví dụ: từ OpenAI sang Google Gemini), **toàn bộ ngữ cảnh trò chuyện vẫn được giữ nguyên** và sẽ được cung cấp cho mô hình mới. Tính năng này đảm bảo "trí nhớ" của trợ lý không bị mất đi khi "bộ não" được thay đổi.
 
-## 📜 Đặc tả API (Dựa trên dự án gốc)
+4.  **Cầu nối Giao tiếp Đa kênh (Multi-channel Bridge):**
+    *   **Trợ lý Server Tích hợp (Chat API):** Cung cấp một API endpoint để người dùng có thể chat trực tiếp với một trợ lý ảo "sống" ngay trên server. Điều này cho phép thử nghiệm nhanh các mô hình AI, ngữ cảnh và tính năng mà không cần thiết bị vật lý.
+    *   **Tích hợp Telegram Bot:** Cho phép người dùng gửi lệnh, đặt câu hỏi (tương tác với chuỗi AI được cá nhân hóa), và nhận cảnh báo/trạng thái từ thiết bị thông qua một bot Telegram chuyên dụng.
+    *   **Giao tiếp Giọng nói:** Xử lý luồng âm thanh hai chiều qua WebSocket cho các thiết bị trợ lý vật lý.
 
-Để xây dựng một máy chủ tương thích, bạn cần tuân thủ đặc tả kỹ thuật được cung cấp bởi dự án gốc `xiaozhi-esp32`.
-
-**Liên kết đến tài liệu đặc tả:** **[Feishu Wiki](https://ccnphfhqs21z.feishu.cn/wiki/FjW6wZmisimNBBkov6OcmfvknVd)**
-
-Tài liệu này mô tả chi tiết:
-*   Các endpoint mà máy chủ cần phải có.
-*   Cấu trúc của các gói tin JSON được gửi và nhận.
-*   Luồng xác thực và kích hoạt thiết bị.
-
-## 🚀 Lộ trình Phát triển Phía Máy chủ (Server-side Roadmap)
-
--   [ ] **Phát triển Máy chủ cơ bản:** Xây dựng một máy chủ tuân thủ đặc tả trên, sử dụng các công nghệ phổ biến như Node.js/Express, Python/FastAPI, hoặc Golang.
--   [ ] **Tích hợp đa AI:** Cho phép dễ dàng chuyển đổi giữa các nhà cung cấp LLM khác nhau (OpenAI, Gemini, Azure AI).
--   [ ] **Container hóa (Docker):** Đóng gói máy chủ vào một Docker image để người dùng có thể dễ dàng tự triển khai (self-host).
--   [ ] **Cung cấp bản dựng công khai:** Triển khai một phiên bản máy chủ `ota.mimi.ai` công khai làm máy chủ mặc định cho các thiết bị MiMi.
--   [ ] **Giao diện Quản lý:** Xây dựng một trang web đơn giản để quản lý các thiết bị đã kết nối và cấu hình hệ thống.
+5.  **Tầm nhìn Tương lai - Nền tảng Nhà Thông minh Toàn diện:**
+    *   **Giao diện Quản lý Web:** Xây dựng một ứng dụng web cho phép người dùng đăng nhập, quản lý các "Trợ lý" của mình, và **chat trực tiếp với bất kỳ trợ lý nào** ngay trên giao diện web đó.
+    *   **Điều khiển Nhà thông minh:** Mở rộng giao diện web để người dùng có thể thiết lập sơ đồ nhà (phòng, khu vực) và đăng ký các thiết bị IoT (đèn, cảm biến, công tắc) vào từng phòng.
+    *   **Tích hợp MQTT hai chiều:** Triển khai một cầu nối MQTT mạnh mẽ, cho phép Giao diện Web và Trợ lý AI có thể điều khiển các thiết bị IoT và nhận trạng thái của chúng theo thời gian thực.
+    *   **Hỗ trợ Đa phương thức (Multimodal):** Nâng cấp để xử lý đầu vào là hình ảnh, video, cho phép các tính năng như nhận diện khuôn mặt, giám sát an ninh.

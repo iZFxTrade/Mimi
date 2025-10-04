@@ -1,148 +1,124 @@
-from fastapi import FastAPI, Header, HTTPException
-from pydantic import BaseModel, Field
-from typing import Optional, List, Dict, Any
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
-# ======================================================================================
-# 1. ĐỊNH NGHĨA CÁC CẤU TRÚC DỮ LIỆU (PYDANTIC MODELS)
-# ======================================================================================
+from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi.middleware.cors import CORSMiddleware # Import CORS
+from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy.orm import Session
 
-# Các model này ánh xạ trực tiếp tới cấu trúc JSON trong tài liệu API
-# Giúp FastAPI tự động validate dữ liệu nhận được và serialize dữ liệu trả về.
+from . import auth, crud, models, schemas, database, database_init
+from datetime import timedelta
 
-# --- Cấu trúc cho Request Body ---
+# --- Initialization ---
+models.Base.metadata.create_all(bind=database.engine)
+app = FastAPI(title="MCP-Server", version="0.1.0")
 
-class ApplicationRequest(BaseModel):
-    version: str
-    elf_sha256: str
+# ===============================================
+# ===           MIDDLEWARE SETUP              ===
+# ===============================================
 
-class BoardRequest(BaseModel):
-    type: str
-    name: str
-    ssid: str
-    rssi: int
-
-class OtaRequest(BaseModel):
-    application: ApplicationRequest
-    mac_address: Optional[str] = None
-    uuid: Optional[str] = None
-    chip_model_name: Optional[str] = None
-    flash_size: Optional[int] = None
-    psram_size: Optional[int] = None
-    partition_table: Optional[List[Any]] = None
-    board: BoardRequest
-
-# --- Cấu trúc cho Response Body ---
-
-class ActivationResponse(BaseModel):
-    code: str
-    message: str
-
-class MqttResponse(BaseModel):
-    endpoint: str
-    client_id: str
-    username: str
-    password: str
-
-class WebsocketResponse(BaseModel):
-    url: str
-    token: str
-
-class ServerTimeResponse(BaseModel):
-    timestamp: int
-    timezone: str
-    timezone_offset: int
-
-class FirmwareResponse(BaseModel):
-    version: str
-    url: str
-
-class OtaResponse(BaseModel):
-    activation: ActivationResponse
-    mqtt: MqttResponse
-    websocket: WebsocketResponse
-    server_time: ServerTimeResponse
-    firmware: FirmwareResponse
-
-# ======================================================================================
-# 2. KHỞI TẠO ỨNG DỤNG FASTAPI
-# ======================================================================================
-
-app = FastAPI(
-    title="MiMi Control Protocol Server",
-    description="Máy chủ trung tâm cho dự án MiMi, xử lý OTA và giao tiếp thiết bị.",
-    version="0.2.0",
+# Add CORS middleware to allow requests from the frontend
+# This is the crucial fix for the 404 errors you were seeing.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins for simplicity in development
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE"], # Allows all major methods
+    allow_headers=["*"],  # Allows all headers
 )
 
-# ======================================================================================
-# 3. ĐỊNH NGHĨA CÁC ENDPOINTS
-# ======================================================================================
 
-@app.get("/")
-def read_root():
-    """
-    Endpoint gốc, dùng để kiểm tra xem máy chủ có đang hoạt động hay không.
-    """
-    return {"message": "Chào mừng đến với MiMi Control Protocol Server! Endpoint /api/ota/ đã sẵn sàng."}
+def get_db():
+    db = database.SessionLocal()
+    try: yield db
+    finally: db.close()
 
-@app.post("/api/ota/", response_model=OtaResponse)
-def handle_ota_request(
-    request_body: OtaRequest,
-    device_id: str = Header(..., description="Mã định danh duy nhất của thiết bị"),
-    user_agent: str = Header(..., description="Tên và phiên bản phần mềm client, ví dụ: esp-box-3/1.5.6"),
-    client_id: Optional[str] = Header(None, description="Mã định danh duy nhất của client"),
-    accept_language: Optional[str] = Header(None, description="Ngôn ngữ hiện tại của client")
-):
-    """
-    Xử lý yêu cầu nâng cấp OTA (Over-The-Air) của thiết bị.
+@app.on_event("startup")
+def on_startup():
+    with database.SessionLocal() as db:
+        database_init.init_database(db)
 
-    Endpoint này nhận thông tin về phiên bản firmware hiện tại của thiết bị 
-    và trả về thông tin phiên bản mới nhất cùng các cấu hình khác.
-    """
-    print(f"Nhận được yêu cầu OTA từ Device-Id: {device_id}")
-    print(f"User-Agent: {user_agent}")
-    print(f"Client-Id: {client_id}")
-    print(f"Firmware hiện tại: {request_body.application.version}")
-    print(f"Thông tin bo mạch: {request_body.board.name}")
+# ===============================================
+# ===          AUTHENTICATION & USERS         ===
+# ===============================================
 
-    # --- LOGIC GIẢ (MOCK LOGIC) ---
-    # Trong thực tế, bạn sẽ cần:
-    # 1. Tra cứu `device_id` hoặc `user_agent` trong cơ sở dữ liệu.
-    # 2. Dựa vào phiên bản và loại thiết bị, quyết định xem có bản cập nhật không.
-    # 3. Lấy thông tin phiên bản mới nhất và URL tải xuống từ cơ sở dữ liệu.
-    # 4. Tạo mã kích hoạt, thông tin MQTT/WebSocket.
-    #
-    # Hiện tại, chúng ta sẽ trả về một phản hồi mẫu được hard-coded.
-    
-    # Tạo một phản hồi mẫu
-    mock_response = OtaResponse(
-        activation=ActivationResponse(
-            code="MIM123",
-            message="Vui lòng kích hoạt trên màn hình thiết bị của bạn."
-        ),
-        mqtt=MqttResponse(
-            endpoint="mqtt.mimi-protocol.dev",
-            client_id=f"GID_test@@@{device_id}@@@{request_body.uuid}",
-            username="device_user",
-            password="secure_password"
-        ),
-        websocket=WebsocketResponse(
-            url="wss://api.mimi-protocol.dev/v1/ws",
-            token="a-very-secure-websocket-token"
-        ),
-        server_time=ServerTimeResponse(
-            timestamp=1678886400000,
-            timezone="Asia/Ho_Chi_Minh",
-            timezone_offset=25200
-        ),
-        firmware=FirmwareResponse(
-            version="1.0.2", # Giả sử đây là phiên bản mới hơn
-            url=f"https://storage.googleapis.com/mimi-firmware/esp-box-3/1.0.2.bin"
-        )
-    )
+@app.post("/api/auth/token", response_model=schemas.Token, tags=["Authentication"])
+def login_for_access_token(db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()):
+    user = auth.authenticate_user(db, form_data.username, form_data.password)
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect credentials")
+    token = auth.create_access_token(data={"sub": user.username})
+    return {"access_token": token, "token_type": "bearer"}
 
-    return mock_response
+@app.get("/api/users/me", response_model=schemas.User, tags=["Users"])
+def read_users_me(current_user: models.User = Depends(auth.get_current_active_user)):
+    return current_user
 
-# ======================================================================================
-# Lệnh để chạy máy chủ (chỉ dành cho môi trường dev):
-# uvicorn MCP-Server.main:app --reload --host 0.0.0.0 --port 8000
-# ======================================================================================
+# ===============================================
+# ===      ADMIN: USER CRUD OPERATIONS        ===
+# ===============================================
+
+@app.post("/api/users/", response_model=schemas.User, tags=["Admin: Users"], dependencies=[Depends(auth.require_admin)])
+def create_user_as_admin(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    db_user = crud.get_user_by_username(db, username=user.username)
+    if db_user:
+        raise HTTPException(status_code=400, detail="Username already registered")
+    return crud.create_user(db=db, user=user)
+
+@app.get("/api/users/", response_model=list[schemas.User], tags=["Admin: Users"], dependencies=[Depends(auth.require_admin)])
+def read_all_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    return crud.get_users(db, skip=skip, limit=limit)
+
+@app.get("/api/users/{user_id}", response_model=schemas.User, tags=["Admin: Users"], dependencies=[Depends(auth.require_admin)])
+def read_user_by_id(user_id: int, db: Session = Depends(get_db)):
+    db_user = crud.get_user(db, user_id=user_id)
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return db_user
+
+@app.put("/api/users/{user_id}", response_model=schemas.User, tags=["Admin: Users"], dependencies=[Depends(auth.require_admin)])
+def update_user_as_admin(user_id: int, user_update: schemas.UserUpdate, db: Session = Depends(get_db)):
+    db_user = crud.update_user(db, user_id=user_id, user_update=user_update)
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return db_user
+
+@app.delete("/api/users/{user_id}", status_code=status.HTTP_204_NO_CONTENT, tags=["Admin: Users"], dependencies=[Depends(auth.require_admin)])
+def delete_user_as_admin(user_id: int, db: Session = Depends(get_db)):
+    success = crud.delete_user(db, user_id=user_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="User not found")
+    return # No content on success
+
+
+# ===============================================
+# ===       GENERAL DATA GETTERS (READ)       ===
+# ===============================================
+@app.get("/api/assistants/", response_model=list[schemas.Assistant], tags=["Data"])
+def read_assistants(user: models.User = Depends(auth.get_current_active_user), db: Session = Depends(get_db)):
+    return db.query(models.Assistant).all() if user.role == 'Admin' else crud.get_user_items(db, user.id, models.Assistant)
+
+@app.get("/api/homes/", response_model=list[schemas.Home], tags=["Data"])
+def read_homes(user: models.User = Depends(auth.get_current_active_user), db: Session = Depends(get_db)):
+    return db.query(models.Home).all() if user.role == 'Admin' else crud.get_user_items(db, user.id, models.Home)
+
+@app.get("/api/rooms/", response_model=list[schemas.Room], tags=["Data"])
+def read_rooms(db: Session = Depends(get_db)):
+    return db.query(models.Room).all()
+
+@app.get("/api/devices/", response_model=list[schemas.Device], tags=["Data"])
+def read_devices(db: Session = Depends(get_db)):
+    return db.query(models.Device).all()
+
+@app.get("/api/scenes/", response_model=list[schemas.Scene], tags=["Data"])
+def read_scenes(db: Session = Depends(get_db)):
+    return db.query(models.Scene).all()
+
+@app.get("/api/models/", response_model=list[schemas.AIModel], tags=["Data"])
+def read_aimodels(db: Session = Depends(get_db)): return db.query(models.AIModel).all()
+
+@app.get("/api/tools/", response_model=list[schemas.Tool], tags=["Data"])
+def read_tools(db: Session = Depends(get_db)): return db.query(models.Tool).all()
+
+@app.get("/api/actions/", response_model=list[schemas.Action], tags=["Data"])
+def read_actions(db: Session = Depends(get_db)): return db.query(models.Action).all()

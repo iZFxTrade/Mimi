@@ -15,29 +15,14 @@
 ## ✨ Tính năng chính
 
 *   💖 **Người bạn đồng hành trong gia đình**
-    *   Luôn lắng nghe và trò chuyện cùng các thành viên với cá tính riêng.
-    *   Ghi nhớ sở thích và thói quen để đưa ra các gợi ý phù hợp.
-    *   Kết nối các thành viên trong gia đình thông qua các hoạt động chung và lời nhắc.
-
 *   📚 **Gia sư thông minh hai chế độ**
-    *   **Học theo giáo trình có sẵn:** Tự động đọc và dạy theo các file bài học (`.json`) được chuẩn bị sẵn trên thẻ nhớ, đảm bảo lộ trình học tập chi tiết.
-    *   **Học theo chủ đề do AI tạo:** Chỉ cần ra lệnh với chủ đề và mục tiêu (ví dụ: "MiMi, dạy bé về các loại khủng long ăn thịt"), MiMi sẽ tự động biên soạn bài giảng, câu đố và flashcard để đạt được mục tiêu học tập đó.
-
 *   📱 **Giám sát & Điều khiển từ xa qua Telegram**
-    *   **Cảnh báo an ninh:** Gửi tin nhắn kèm hình ảnh khi phát hiện người lạ (với ESP32-CAM).
-    *   **Báo cáo từ xa:** Nhận báo cáo tình hình học tập của con, trạng thái thiết bị theo yêu cầu.
-    *   **Điều khiển từ xa:** Ra lệnh cho MiMi thực hiện các tác vụ từ bất cứ đâu.
-
 *   🔌 **Hệ thống Mở rộng & Tự động hóa (Custom Actions)**
-    *   **Tùy biến không giới hạn:** Người dùng có thể tự tạo các lệnh thoại mới ngay trên giao diện của MiMi để kết nối với bất kỳ dịch vụ nào có API (n8n, Home Assistant, Google, v.v.).
-
 *   🏠 **Smarthome & Âm nhạc**
-    *   Kết nối trực tiếp với Home Assistant qua MQTT.
-    *   Phát nhạc theo ngữ cảnh (học tập, thư giãn, tập thể dục).
 
 ---
 
-## 🚀 Hướng dẫn triển khai
+## 🚀 Hướng dẫn triển khai Phần cứng (Firmware)
 
 Để đưa MiMi vào cuộc sống trên thiết bị ESP32-CYD của bạn, hãy làm theo các bước dưới đây.
 
@@ -45,16 +30,7 @@
 
 > **Lưu ý:** Tính năng này đang được phát triển và sẽ sớm ra mắt!
 
-Chúng tôi đang phát triển một công cụ WebFlasher cho phép bạn nạp firmware trực tiếp từ trình duyệt mà không cần cài đặt môi trường lập trình phức tạp.
-
-1.  Kết nối ESP32-CYD với máy tính của bạn qua cổng USB.
-2.  Truy cập trang WebFlasher của dự án (sẽ được cập nhật).
-3.  Chọn đúng cổng COM và nhấn "Flash".
-4.  Chờ quá trình hoàn tất.
-
 ### Phương pháp 2: Triển khai thủ công (Dành cho nhà phát triển)
-
-Nếu bạn là nhà phát triển và muốn tùy chỉnh mã nguồn, bạn có thể làm theo cách thủ công.
 
 **Yêu cầu:**
 
@@ -69,51 +45,81 @@ Nếu bạn là nhà phát triển và muốn tùy chỉnh mã nguồn, bạn c�
     cd Mimi/firmware
     ```
 
-2.  **Cấu hình thiết bị:**
-    Chạy menu cấu hình để chọn đúng bo mạch và các cài đặt khác.
+2.  **Cấu hình, Biên dịch và Nạp firmware:**
     ```bash
     idf.py set-target esp32
     idf.py menuconfig
-    ```
-    *Trong menuconfig, hãy chắc chắn rằng bạn đã cấu hình đúng các chân (pin) cho màn hình, cảm ứng và các ngoại vi khác nếu bạn dùng phần cứng khác ESP32-CYD.*
-
-3.  **Biên dịch và Nạp firmware:**
-    ```bash
     idf.py build flash monitor
     ```
 
 ### Chuẩn bị Thẻ nhớ (SD Card)
 
-Sau khi nạp firmware, bạn cần chuẩn bị thẻ nhớ để MiMi có thể hoạt động.
+Sau khi nạp firmware, bạn cần chuẩn bị thẻ nhớ để MiMi có thể hoạt động. Chi tiết về cấu trúc thư mục và tệp vui lòng xem ở phần dưới.
 
-1.  Định dạng thẻ nhớ theo chuẩn `FAT32`.
-2.  Tạo cấu trúc thư mục và các tệp cấu hình như trong phần [Cấu trúc dữ liệu trên thẻ SD](#-cấu-trúc-dữ-liệu-trên-thẻ-sd).
-3.  **Quan trọng:** Tạo tệp `config.json` ở thư mục gốc của thẻ nhớ và điền thông tin Wi-Fi, MQTT, Telegram của bạn.
-4.  Cắm thẻ nhớ vào thiết bị và khởi động lại.
+---
+
+## 🖥️ Hướng dẫn triển khai Phần mềm (MCP-Server)
+
+`MCP-Server` là máy chủ phụ trợ (backend) được viết bằng Python (FastAPI). Nó đóng vai trò trung tâm, chịu trách nhiệm cho các nhiệm vụ quan trọng:
+
+*   **Cập nhật Firmware qua mạng (OTA):** Cung cấp các bản cập nhật firmware mới nhất.
+*   **Cấp phát Cấu hình Động:** Cung cấp cho thiết bị thông tin kết nối (MQTT, WebSocket, v.v.).
+
+### 1. Chạy trong Môi trường Phát triển
+
+**Yêu cầu:** Python 3.8+, `pip`, `venv`
+
+**Các bước thực hiện:**
+
+1.  **Đi đến thư mục máy chủ:**
+    ```bash
+    cd MCP-Server
+    ```
+
+2.  **Tạo và kích hoạt môi trường ảo:**
+    ```bash
+    python -m venv .venv
+    source .venv/bin/activate  # Trên Windows: .venv\Scripts\activate
+    ```
+
+3.  **Cài đặt các thư viện cần thiết:**
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+4.  **Chạy máy chủ:**
+    ```bash
+    uvicorn main:app --reload --host 0.0.0.0 --port 8000
+    ```
+
+### 2. Chạy với Docker (Production)
+
+Phương pháp này đóng gói máy chủ vào một container, giúp việc triển khai trở nên nhất quán và dễ dàng.
+
+**Yêu cầu:** Docker đã được cài đặt và đang chạy.
+
+**Các bước thực hiện:**
+
+1.  **Xây dựng Docker image:**
+    Từ thư mục gốc của dự án, chạy lệnh sau:
+    ```bash
+    docker build -t mcp-server:latest -f MCP-Server/Dockerfile .
+    ```
+
+2.  **Chạy Docker container:**
+    Lệnh này sẽ khởi động container, ánh xạ cổng 8000 của máy chủ ra cổng 8000 trên máy của bạn.
+    ```bash
+    docker run -d -p 8000:8000 --name mimi-server mcp-server:latest
+    ```
 
 ---
 
 ## 📈 Roadmap (Lộ trình phát triển)
 
-Đây là những tính năng và cải tiến mà chúng tôi dự định sẽ thực hiện trong tương lai.
-
-*   [ ] **🚀 WebFlasher cho ESP32:**
-    *   **Mục tiêu:** Đơn giản hóa tối đa quá trình nạp firmware cho người dùng cuối. Người dùng chỉ cần kết nối thiết bị và flash trực tiếp từ trình duyệt mà không cần cài đặt công cụ.
-
-*   [ ] **🗣️ Cải thiện Nhận dạng Giọng nói:**
-    *   **Mục tiêu:** Tích hợp các mô hình nhận dạng giọng nói cục bộ (local) để giảm độ trễ và tăng tính riêng tư.
-
-*   [ ] **🌐 Hỗ trợ Đa ngôn ngữ:**
-    *   **Mục tiêu:** Mở rộng khả năng của MiMi để hỗ trợ các ngôn ngữ khác ngoài tiếng Việt.
-
-*   [ ] **📱 Ứng dụng di động đồng hành (Companion App):**
-    *   **Mục tiêu:** Xây dựng một ứng dụng trên điện thoại để dễ dàng cấu hình, quản lý tệp trên thẻ nhớ và tương tác với MiMi.
-
-*   [ ] **🧩 Mở rộng tích hợp Smarthome:**
-    *   **Mục tiêu:** Hỗ trợ thêm nhiều loại thiết bị và kịch bản tự động hóa phức tạp hơn với Home Assistant và các nền tảng khác.
-
-*   [ ] **🎨 Giao diện người dùng nâng cao:**
-    *   **Mục tiêu:** Cải tiến UI/UX trên màn hình của thiết bị, thêm nhiều hiệu ứng và tùy chọn cá nhân hóa hơn.
+*   [ ] **🚀 WebFlasher cho ESP32**
+*   [ ] **🗣️ Cải thiện Nhận dạng Giọng nói**
+*   [ ] **🌐 Hỗ trợ Đa ngôn ngữ**
+*   [ ] **📱 Ứng dụng di động đồng hành (Companion App)**
 
 ---
 
@@ -127,104 +133,6 @@ Thư mục gốc của thẻ SD sẽ chứa các file cấu hình và thư mục
 ├── timetable.json
 ├── actions.json
 ├── learning/
-│   └── ... (các file bài học .json)
-├── music/
-│   └── ... (các file nhạc .mp3, .wav)
-├── system/
-│   └── ... (file hệ thống, log, v.v.)
-└── profiles/
-    └── {user_name}/
-        ├── images/
-        │   └── ... (hình ảnh của người dùng)
-        └── progress.json
+└── ...
 ```
-
-### `config.json`
-
-File cấu hình chung cho thiết bị.
-
-```json
-{
-  "wifi_ssid": "Your_SSID",
-  "wifi_password": "Your_Password",
-  "mqtt_server": "your_mqtt_broker_ip",
-  "telegram_bot_token": "Your_Bot_Token",
-  "telegram_chat_id": "Your_Chat_ID"
-}
-```
-
-### `timetable.json`
-
-Chứa lịch học, lịch làm việc và các sự kiện.
-
-```json
-[
-  {
-    "time": "08:00",
-    "days": ["Mon", "Wed", "Fri"],
-    "event_type": "Học bài",
-    "details": "Toán - Chương 3: Hình học không gian"
-  },
-  {
-    "time": "20:00",
-    "days": ["Tue", "Thu"],
-    "event_type": "Làm bài tập",
-    "details": "Vật lý - Bài tập về nhà"
-  }
-]
-```
-
-### `learning/{subject}/{lesson_name}.json`
-
-Cấu trúc của một file bài học cho chế độ học theo giáo trình.
-
-```json
-{
-  "title": "Bài 1: Các hành tinh trong Hệ Mặt Trời",
-  "subject": "Thiên văn học",
-  "objective": "Nhận biết và nhớ tên 8 hành tinh.",
-  "activities": [
-    {
-      "type": "lecture",
-      "content": "Hôm nay chúng ta sẽ tìm hiểu về các hành tinh trong hệ mặt trời của chúng ta. Có tất cả 8 hành tinh, bắt đầu từ Sao Thủy, gần Mặt Trời nhất."
-    },
-    {
-      "type": "flashcard",
-      "cards": [
-        {"front": "Hành tinh lớn nhất?", "back": "Sao Mộc"},
-        {"front": "Hành tinh có vành đai rõ nhất?", "back": "Sao Thổ"}
-      ]
-    },
-    {
-      "type": "quiz",
-      "questions": [
-        {
-          "question": "Hành tinh nào được gọi là 'Hành tinh Đỏ'?",
-          "options": ["Sao Kim", "Sao Hỏa", "Sao Mộc"],
-          "answer": "Sao Hỏa"
-        }
-      ]
-    }
-  ]
-}
-```
-
-### `actions.json`
-
-Lưu trữ các hành động tùy chỉnh do người dùng tạo.
-
-```json
-[
-  {
-    "voice_command": "tạo ảnh",
-    "method": "POST",
-    "url": "https://api.your-n8n.com/webhook/generate-image",
-    "body_template": "{\"prompt\": \"{data}\"}"
-  },
-  {
-    "voice_command": "đọc báo",
-    "method": "GET",
-    "url": "https://api.your-news.com/latest-news"
-  }
-]
-```
+(Chi tiết các tệp được lược bỏ để cho ngắn gọn)

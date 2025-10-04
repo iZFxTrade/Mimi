@@ -1,0 +1,44 @@
+{
+  "activation": {
+    "prefix": "MIM",
+    "message": "Vui lòng kích hoạt thiết bị của bạn."
+  },
+  "mqtt": {
+    "endpoint": "your_mqtt_broker_endpoint",
+    "client_id_prefix": "GID_test",
+    "username": "your_mqtt_username",
+    "password": "your_mqtt_password"
+  },
+  "websocket": {
+    "url": "ws://your_server_address/api/v1/chat",
+    "token": "your_secure_websocket_token"
+  },
+  "server_time": {
+    "timezone": "Asia/Ho_Chi_Minh",
+    "timezone_offset": 25200
+  },
+  "ai_services": {
+    "stt": {
+      "provider": "openai",
+      "openai": {
+        "api_key": "YOUR_OPENAI_API_KEY_HERE"
+      }
+    },
+    "llm": {
+      "provider": "openai",
+      "openai": {
+        "api_key": "YOUR_OPENAI_API_KEY_HERE",
+        "model": "gpt-3.5-turbo",
+        "system_prompt": "Bạn là một trợ lý ảo hữu ích có tên là MiMi."
+      }
+    },
+    "tts": {
+      "provider": "viettts",
+      "openai": {
+        "api_key": "YOUR_OPENAI_API_KEY_HERE",
+        "voice": "nova"
+      },
+      "viettts": {}
+    }
+  }
+}

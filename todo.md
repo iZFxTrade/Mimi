@@ -96,9 +96,25 @@
     - **Vấn đề:** Lệnh `python3 -m uvicorn MCP-Server.main:app` thất bại với lỗi `No module named uvicorn`.
     - **Nguyên nhân:** File `.idx/dev.nix` chỉ cài đặt Python mà không cài đặt các thư viện trong `requirements.txt`.
     - **Giải pháp:** Cập nhật `.idx/dev.nix` để tự động tạo môi trường ảo (`.venv`) và chạy `pip install -r MCP-Server/requirements.txt` khi khởi động hoặc khi file thay đổi. Cũng đã cấu hình sẵn một preview để chạy server.
-- [ ] **Tải lại môi trường & Xác minh:** **CHỜ BẠN TẢI LẠI MÔI TRƯỜDNG.** Sau khi tải lại, tôi sẽ sử dụng preview đã cấu hình để khởi chạy và xác minh máy chủ.
-- [ ] **Khởi chạy và kiểm thử máy chủ:** Sử dụng cấu hình `previews` đã thiết lập để khởi động máy chủ FastAPI và xác minh nó hoạt động.
+- [x] **Tải lại môi trường & Xác minh:** **(ĐÃ HOÀN THÀNH TRONG PHIÊN LÀM VIỆC MỚI)**
+- [x] **Khởi chạy và kiểm thử máy chủ:** **(ĐÃ HOÀN THÀNH TRONG PHIÊN LÀM VIỆC MỚI)**
 - [ ] **Kiểm thử API Endpoint `/api/ota/`:** Gửi một yêu cầu `curl` hoặc sử dụng một công cụ khác để kiểm tra phản hồi từ logic giả lập.
+
+---
+
+## Cập nhật & Công việc Hiện tại: Hoàn thiện Môi trường MCP-Server (Bắt đầu: 2025-10-04 09:30:00 UTC)
+
+*Tiếp nối công việc từ phiên trước, tập trung vào việc khởi chạy và ổn định máy chủ MCP.*
+
+- [x] **Xác minh sự cố môi trường:** Chạy lệnh `python3 -m uvicorn ...` và xác nhận lỗi `No module named uvicorn` vẫn tồn tại, cho thấy quá trình tự động tạo môi trường ảo đã không thành công.
+- [x] **Giải quyết sự cố môi trường (Thủ công):**
+    - **Bước 1:** Tạo thủ công môi trường ảo (`python3 -m venv MCP-Server/.venv`).
+    - **Bước 2:** Cài đặt các thư viện cần thiết vào môi trường ảo (`MCP-Server/.venv/bin/pip install -r MCP-Server/requirements.txt`).
+- [x] **Khởi chạy và kiểm thử máy chủ:** Khởi chạy thành công máy chủ FastAPI bằng cách sử dụng trình thông dịch Python từ môi trường ảo (`MCP-Server/.venv/bin/python -m uvicorn ...`). **==> Máy chủ đã hoạt động!**
+- [x] **Tổ chức lại Quản lý Công việc cho MCP-Server:**
+    - **Bước 1:** Tạo một tệp `todo.md` chuyên dụng tại `MCP-Server/todo.md` để theo dõi các công việc, mục tiêu và sự cố riêng của máy chủ.
+    - **Bước 2:** Cập nhật tệp `MCP-Server/README.md` để thêm liên kết đến tệp `todo.md` mới.
+- [ ] **Công việc tiếp theo (Theo `MCP-Server/todo.md`):** Kiểm thử API Endpoint `/api/ota/` bằng `curl`.
 
 ---
 
@@ -112,3 +128,23 @@
 *   Giai đoạn **biên dịch (build), gỡ lỗi (debug) và nạp firmware (flash)** sẽ chỉ được bắt đầu sau khi tất cả các mục trong `todo.md` được đánh dấu là hoàn thành.
 
 Lý do: Để đảm bảo luồng phát triển được tập trung, tránh phát sinh các vấn.đề về môi trường và công cụ khi các tính năng cốt lõi chưa hoàn thiện.
+
+---
+
+## Cập nhật & Công việc Hiện tại: Xây dựng Admin Dashboard (2024-05-24)
+
+*Tập trung vào việc xây dựng giao diện quản trị cho MCP-Server.*
+
+- [x] **Backend - Database:**
+    - [x] Cấu trúc CSDL (`models.py`, `schemas.py`).
+    - [x] Tạo dữ liệu demo ban đầu (`database_init.py`).
+    - [x] Hoàn thiện CRUD backend cho Users (`crud.py`, `main.py`).
+- [x] **Backend - Connectivity:**
+    - [x] Kích hoạt `CORSMiddleware` trong `main.py` để cho phép kết nối từ frontend.
+- [ ] **Frontend - Admin Dashboard (`admin.html`):**
+    - **Tình trạng:** Đang trong quá trình xây dựng lại. Các phiên bản trước đó bị lỗi layout, lỗi logic và không hiển thị dữ liệu demo như yêu cầu.
+    - **Vấn đề chính:** Chưa đáp ứng được thiết kế layout 3 cột (Sidebar - Main Content - Chat Panel) và chưa có logic để render dữ liệu demo khi không có dữ liệu thật.
+    - **Công việc tiếp theo:** Thiết kế lại hoàn toàn `admin.html` để:
+        1.  Có layout 3 cột, với khung chat lớn bên phải có thể thu gọn.
+        2.  Viết đầy đủ các hàm `render()` cho tất cả các mục (Users, Assistants, Smart Home, Capabilities), đảm bảo dữ liệu demo được hiển thị đúng cách.
+        3.  Tích hợp lại chức năng CRUD cho User vào layout mới.

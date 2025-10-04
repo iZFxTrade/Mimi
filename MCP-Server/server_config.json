@@ -1,0 +1,43 @@
+{
+    "activation": {
+        "prefix": "MIM",
+        "message": "Vui lòng kích hoạt tại http://192.168.1.100:8000/activate"
+    },
+    "mqtt": {
+        "endpoint": "mqtt://192.168.1.100:1883",
+        "client_id_prefix": "MiMi-",
+        "username": "admin",
+        "password": "public"
+    },
+    "websocket": {
+        "url": "ws://192.168.1.100:8000/api/v1/chat",
+        "token": "dummy_token_for_now"
+    },
+    "server_time": {
+        "timezone": "Asia/Ho_Chi_Minh",
+        "timezone_offset": 25200
+    },
+    "ai_services": {
+        "stt": {
+            "provider": "openai",
+            "openai": {
+                "api_key": "YOUR_OPENAI_API_KEY_HERE"
+            }
+        },
+        "llm": {
+            "provider": "openai",
+            "openai": {
+                "api_key": "YOUR_OPENAI_API_KEY_HERE",
+                "model": "gpt-3.5-turbo",
+                "system_prompt": "Bạn là một trợ lý ảo thân thiện và hữu ích tên là MiMi, nói tiếng Việt."
+            }
+        },
+        "tts": {
+            "provider": "openai",
+            "openai": {
+                "api_key": "YOUR_OPENAI_API_KEY_HERE",
+                "voice": "nova"
+            }
+        }
+    }
+}

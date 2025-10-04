@@ -1,0 +1,75 @@
+/* General Body Styling */
+body {
+    background-color: #f8f9fa;
+    overflow-x: hidden;
+}
+
+.wrapper { display: flex; width: 100%; min-height: 100vh; }
+
+/* Left Sidebar (Navigation) */
+.sidebar {
+    position: fixed; top: 0; left: 0; height: 100vh; width: 260px; 
+    background-color: #ffffff; border-right: 1px solid #dee2e6;
+    display: flex; flex-direction: column; z-index: 1020;
+}
+.sidebar-header { padding: 1.5rem; font-size: 1.5rem; font-weight: bold; border-bottom: 1px solid #dee2e6; }
+.sidebar-nav { flex-grow: 1; padding: 1rem 0; }
+.sidebar-nav .nav-link { padding: 0.75rem 1.5rem; color: #333; font-size: 1rem; }
+.sidebar-nav .nav-link:hover { background-color: #e9ecef; }
+.sidebar-nav .nav-link.active { background-color: #0d6efd; color: white; }
+.btn-logout { margin: 1.5rem; margin-top: auto; }
+
+/* Main Content Styling */
+.main-content {
+    margin-left: 260px; 
+    padding: 2rem;
+    width: calc(100% - 260px);
+    transition: margin-right 0.4s ease;
+}
+body.chat-open .main-content {
+    margin-right: 350px; /* Make space for chat */
+}
+
+.page { display: none; }
+.page.active { display: block; }
+
+/* Right Chat Sidebar */
+.chat-sidebar {
+    position: fixed; top: 0; right: 0; height: 100vh; width: 350px; 
+    background-color: #ffffff; border-left: 1px solid #dee2e6;
+    display: flex; flex-direction: column; 
+    transform: translateX(100%); /* Hidden by default */
+    transition: transform 0.4s ease; z-index: 1030;
+}
+body.chat-open .chat-sidebar { transform: translateX(0); }
+
+.chat-sidebar-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1rem; border-bottom: 1px solid #dee2e6;
+}
+.chat-sidebar-header .dropdown-toggle { font-weight: bold; }
+
+.chat-messages {
+    flex-grow: 1; overflow-y: auto; padding: 1rem; background-color: #f8f9fa;
+}
+.chat-input-area {
+    padding: 1rem; border-top: 1px solid #dee2e6;
+}
+
+/* Floating Action Button for Chat Toggle */
+.chat-toggle-fab {
+    position: fixed; bottom: 25px; right: 25px; width: 60px; height: 60px;
+    border-radius: 50%; background-color: #0d6efd; color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.8rem; border: none; box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    cursor: pointer; z-index: 1040; 
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    opacity: 1; transform: scale(1);
+}
+.chat-toggle-fab:hover { transform: scale(1.05); }
+
+/* Hide FAB when chat is open */
+body.chat-open .chat-toggle-fab {
+    opacity: 0;
+    transform: scale(0);
+}

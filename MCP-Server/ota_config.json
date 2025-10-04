@@ -1,0 +1,15 @@
+{
+  "firmware_releases": {
+    "mimi-cyd": {
+      "latest_version": "1.0.2",
+      "firmware_url": "https://storage.googleapis.com/mimi-firmware/mimi-cyd/1.0.2/mimi-cyd.bin",
+      "changelog": "Cải thiện hiệu suất, sửa lỗi giao diện người dùng và thêm biểu cảm mới.",
+      "force_update_below": "0.9.8"
+    },
+    "esp-box-3": {
+      "latest_version": "1.5.8",
+      "firmware_url": "https://storage.googleapis.com/mimi-firmware/esp-box-3/1.5.8/esp-box-3.bin",
+      "changelog": "Hỗ trợ thêm nhiều lệnh thoại hơn và tối ưu hóa kết nối WiFi."
+    }
+  }
+}

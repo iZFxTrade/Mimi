@@ -1,2 +1,15 @@
 fastapi
 uvicorn[standard]
+openai
+python-telegram-bot
+packaging
+# vietnam-tts # Tạm thời vô hiệu hóa để giải quyết lỗi cài đặt
+
+# Dependencies for new architecture (User Management & DB)
+SQLAlchemy
+passlib[bcrypt]
+python-jose[cryptography]
+python-multipart # Required for form data (OAuth2PasswordRequestForm)
+
+# Version Fixes for Compatibility
+bcrypt==3.2.0 # Pin version to be compatible with passlib 1.7.4

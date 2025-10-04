@@ -1,127 +1,107 @@
-## Tài liệu API OTA
+# Tài liệu API OTA và Kích hoạt Thiết bị
 
-### Tổng quan
-API này được sử dụng để xử lý yêu cầu nâng cấp OTA (Over-The-Air) của thiết bị. Thiết bị gửi thông tin và phiên bản firmware hiện tại, máy chủ sẽ trả về thông tin phiên bản firmware mới nhất cùng đường dẫn tải (nếu có bản cập nhật).
+Đây là tài liệu mô tả chi tiết về endpoint `POST /api/ota/`, là điểm giao tiếp đầu tiên và quan trọng nhất giữa một thiết bị (client) và MCP Server.
 
-Ngoài ra, phản hồi của phiên bản mới cũng có thể bao gồm thông tin về máy chủ MQTT, WebSocket và mã kích hoạt của thiết bị.
+## 1. Tổng quan
 
----
+- **Endpoint:** `POST /api/ota/`
+- **Method:** `POST`
+- **Mục đích:**
+    1.  Để client tự giới thiệu và đăng ký với server.
+    2.  Để client kiểm tra xem có bản cập nhật firmware (OTA) mới hay không.
+    3.  Để client **đồng bộ hóa các cấu hình mở rộng** (như Telegram, Nhà thông minh) lên server.
+    4.  Để server cung cấp các thông tin kết nối cần thiết (MQTT, WebSocket) cho client.
 
-### Phương thức yêu cầu
-`POST /api/ota/`
+## 2. Cấu trúc Request
 
----
+### Headers
 
-### Header yêu cầu
-- **Device-Id**: Mã định danh duy nhất của thiết bị (bắt buộc, có thể là địa chỉ MAC hoặc mã giả MAC được tạo từ ID phần cứng)
-- **Client-Id**: Mã định danh duy nhất của client, được tạo tự động (UUID v4). Sẽ thay đổi khi xóa Flash hoặc cài đặt lại.
-- **User-Agent**: Tên và phiên bản phần mềm client (bắt buộc, ví dụ `esp-box-3/1.5.6`)
-- **Accept-Language**: Ngôn ngữ hiện tại của client (tùy chọn, ví dụ `zh-CN`)
+| Header          | Bắt buộc | Mô tả                                                                   |
+| --------------- | -------- | ----------------------------------------------------------------------- |
+| `Device-Id`     | Có       | Mã định danh duy nhất của phần cứng thiết bị (ví dụ: MAC address).     |
+| `Client-Id`     | Có       | Mã định danh duy nhất của phiên cài đặt phần mềm, tạo khi flash.        |
+| `User-Agent`    | Có       | Thông tin về loại client (ví dụ: `ESP32-S3-BOX-3-OTA-Agent/1.0.0`).      |
+| `Content-Type`  | Có       | Luôn là `application/json`.                                             |
 
----
+### Body (JSON)
 
-### Request Body
-Yêu cầu phải ở định dạng JSON và chứa các trường sau:
+Đây là cấu trúc JSON mà client gửi lên server.
 
 ```json
 {
   "application": {
-    "version": "1.0.1",          // Phiên bản firmware hiện tại
-    "elf_sha256": "<hash>"       // Mã SHA256 dùng để kiểm tra tính toàn vẹn firmware
+    "version": "1.0.0",
+    "elf_sha256": "sha256_hash_of_firmware_file"
   },
-  "mac_address": "11:22:33:44:55:66",   // Địa chỉ MAC (tùy chọn)
-  "uuid": "<Client-Id>",               // Client UUID (tùy chọn)
-  "chip_model_name": "esp32s3",        // Model chip (tùy chọn)
-  "flash_size": 16777216,               // Dung lượng flash (tùy chọn)
-  "psram_size": 4194304,                // Dung lượng PSRAM (tùy chọn)
-  "partition_table": [...],             // Bảng phân vùng thiết bị (tùy chọn)
   "board": {
-    "type": "xingzhi-cube-1.54tft-wifi",  // Loại bo mạch
-    "name": "xingzhi-cube-1.54tft-wifi",  // Tên SKU bo mạch
-    "ssid": "PhongNgu",                    // Tên Wi-Fi kết nối
-    "rssi": -55                             // Cường độ tín hiệu Wi-Fi
+    "type": "esp32-s3-box-3",
+    "name": "esp32-s3-box-3_16mb"
+  },
+  "auto_update_enabled": true,
+  "uuid": "client_id_from_header",
+
+  "telegram": { // <-- Trường tùy chọn để kích hoạt bot Telegram
+    "bot_token": "YOUR_TELEGRAM_BOT_TOKEN_HERE",
+    "allowed_chat_ids": ["your_telegram_chat_id"]
+  },
+
+  "smart_home": { // <-- Ví dụ về một trường tùy chọn khác trong tương lai
+      "rooms": [
+          {
+              "name": "Phòng khách",
+              "devices": [
+                  { "topic": "living_room/light1", "name": "Đèn chùm", "type": "light" }
+              ]
+          }
+      ]
   }
 }
 ```
 
----
+### 💡 Chiến lược Mở rộng Không Phá vỡ (Non-Breaking Extension)
 
-### Phản hồi thành công
-Phản hồi được trả về ở định dạng JSON:
+Điểm quan trọng nhất của API này là tính linh hoạt của nó.
+
+- **Các trường cốt lõi** (`application`, `board`, `uuid`) là bắt buộc và phải được gửi bởi mọi client để đảm bảo tương thích ngược với kiến trúc gốc.
+- **Các trường mở rộng** (`telegram`, `smart_home`, v.v.) là **tùy chọn (optional)**. Client gốc của `xiaozhi` sẽ không gửi các trường này, và server sẽ bỏ qua chúng một cách an toàn. Các client được nâng cấp của chúng ta có thể gửi kèm một hoặc nhiều trường này để kích hoạt các tính năng tương ứng trên server.
+
+Cách tiếp cận này cho phép chúng ta liên tục thêm các tính năng mới vào hệ sinh thái mà không làm ảnh hưởng đến các thiết bị cũ đang hoạt động.
+
+## 3. Cấu trúc Response
+
+Server sẽ phản hồi một cấu trúc JSON chi tiết, cung cấp mọi thông tin client cần để đi vào hoạt động.
 
 ```json
 {
+  "has_update": false, // true nếu có bản firmware mới
   "activation": {
-    "code": "ABC123",          // Mã kích hoạt thiết bị
-    "message": "Vui lòng kích hoạt trên màn hình"
+    "code": "MIM123456",
+    "message": "Vui lòng kích hoạt."
   },
   "mqtt": {
-    "endpoint": "mqtt.example.com",
-    "client_id": "GID_test@@@device-id@@@uuid",
-    "username": "device_12345",
-    "password": "password"
+    "endpoint": "mqtt.yourserver.com",
+    "client_id": "GID_test@@@device_id@@@uuid",
+    "username": "mqtt_user",
+    "password": "mqtt_password"
   },
   "websocket": {
-    "url": "wss://api.tenclass.net/xiaozhi/v1/",
-    "token": "test-token"
+    "url": "ws://yourserver.com/api/v1/voice_chat",
+    "token": "websocket_access_token"
   },
   "server_time": {
-    "timestamp": 1633024800000,
-    "timezone": "Asia/Shanghai",
-    "timezone_offset": -480
+    "timestamp": 1678886400000,
+    "timezone": "Asia/Ho_Chi_Minh",
+    "timezone_offset": 25200
   },
-  "firmware": {
-    "version": "1.0.2",              // Phiên bản firmware mới nhất
-    "url": "https://example.com/firmware/1.0.2.bin"  // Đường dẫn tải firmware
-  }
+  "firmware": null // Hoặc chứa thông tin firmware nếu has_update là true
 }
 ```
 
----
-
-### Phản hồi lỗi
-- **400 Bad Request** – Yêu cầu thiếu trường bắt buộc hoặc trường không hợp lệ
-  ```json
-  { "error": "Device ID is required" }
-  ```
-
-- **500 Internal Server Error** – Lỗi hệ thống
-  ```json
-  { "error": "Failed to read device auto_update status" }
-  ```
-
----
-
-### Ví dụ yêu cầu ESP32 đầy đủ
-```http
-POST /xiaozhi/ota/ HTTP/1.1
-Host: api.tenclass.net
-Content-Type: application/json
-User-Agent: xingzhi-cube-1.54tft-wifi/1.0.1
-Device-Id: 11:22:33:44:55:66
-Client-Id: 7b94d69a-9808-4c59-9c9b-704333b38aff
-
-{
-  "version": 2,
-  "language": "zh-CN",
-  "flash_size": 16777216,
-  "minimum_free_heap_size": 8457848,
-  "mac_address": "11:22:33:44:55:66",
-  "chip_model_name": "esp32s3",
-  "uuid": "7b94d69a-9808-4c59-9c9b-704333b38aff",
-  "application": {
-    "name": "xiaozhi",
-    "version": "1.0.1",
-    "compile_time": "Feb 1 2025T23:02:27Z",
-    "idf_version": "v5.4-dirty",
-    "elf_sha256": "c8a8ecb6d6fbcda682494d9675cd1ead240ecf38bdde75282a42365a0e396033"
-  }
-}
-```
-
----
-
-### Ghi chú
-- Các thiết bị có firmware phiên bản **0.9.8** và loại bắt đầu bằng `bread-` sẽ bị **buộc cập nhật** do lỗi mã hóa âm thanh.
-- Nếu thiết bị **tắt tự động cập nhật**, máy chủ sẽ không trả về bản firmware mới.
-- Nếu loại thiết bị **không xác định hoặc không có bản firmware phù hợp**, phản hồi sẽ trả lại phiên bản hiện tại và đường dẫn tải rỗng.
+| Trường          | Kiểu      | Mô tả                                                                                             |
+| --------------- | --------- | ------------------------------------------------------------------------------------------------- |
+| `has_update`    | boolean   | Báo hiệu có bản cập nhật firmware mới hay không.                                                  |
+| `activation`    | object    | Thông tin mã kích hoạt (ít dùng trong kiến trúc của chúng ta).                                    |
+| `mqtt`          | object    | Cấu hình để client kết nối tới MQTT broker.                                                      |
+| `websocket`     | object    | URL và token để client kết nối tới kênh WebSocket giao tiếp giọng nói.                             |
+| `server_time`   | object    | Thông tin thời gian hiện tại của server để đồng bộ.                                               |
+| `firmware`      | object/null | Nếu `has_update` là `true`, trường này sẽ chứa URL và changelog của bản cập nhật. Nếu không, nó là `null`. |
