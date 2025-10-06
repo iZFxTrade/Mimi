@@ -1,4 +1,4 @@
-# Define source files
+idf_component_register(SRCS "main.c")
 set(SOURCES "audio/audio_codec.cc"
             "audio/audio_service.cc"
             "audio/codecs/no_audio_codec.cc"
@@ -582,11 +582,7 @@ if(CONFIG_IDF_TARGET_ESP32)
                              )
 endif()
 
-idf_component_register(SRCS ${SOURCES}
-                    EMBED_FILES ${LANG_SOUNDS} ${COMMON_SOUNDS}
-                    INCLUDE_DIRS ${INCLUDE_DIRS}
-                    WHOLE_ARCHIVE
-                    )
+idf_component_register(SRCS "main.c")
 
 # Use target_compile_definitions to define BOARD_TYPE, BOARD_NAME
 # If BOARD_NAME is empty, use BOARD_TYPE
@@ -789,6 +785,10 @@ if ("${size}" AND "${offset}")
         message(STATUS "Custom assets flash configured: ${ASSETS_LOCAL_FILE} -> assets partition")
     elseif(CONFIG_FLASH_NONE_ASSETS)
         message(STATUS "Assets flashing disabled (FLASH_NONE_ASSETS)")
+    endif()
+else()
+    message(STATUS "Assets partition not found, using v1 partition table")
+endif()
     endif()
 else()
     message(STATUS "Assets partition not found, using v1 partition table")

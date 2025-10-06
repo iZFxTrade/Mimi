@@ -22,6 +22,26 @@
 
 ---
 
+## 🔎 Kiểm tra cấu trúc dự án trước khi thiết lập môi trường build
+
+Trước khi tiến hành thiết lập môi trường build firmware, hãy đảm bảo rằng các file và thư mục sau đã tồn tại trong dự án:
+
+- `src/` — Chứa mã nguồn firmware
+- `Makefile` — Hướng dẫn build firmware
+- `setup_build_env.sh` — Script cài đặt môi trường build
+- `PROJECT_BLUEPRINT.md` hoặc `blueprint.md` — Thiết kế hệ thống
+- `todo.md` — Danh sách công việc
+- (Tùy chọn) `include/` — Header files
+- (Tùy chọn) `build/` — Thư mục chứa file output sau khi build
+
+Bạn có thể kiểm tra nhanh bằng lệnh:
+```bash
+tree -L 2
+```
+Nếu thiếu file hoặc thư mục nào, hãy tạo hoặc tham khảo tài liệu dự án để bổ sung.
+
+---
+
 ## 🚀 Hướng dẫn triển khai Phần cứng (Firmware)
 
 Để đưa MiMi vào cuộc sống trên thiết bị ESP32-CYD của bạn, hãy làm theo các bước dưới đây.
@@ -135,4 +155,44 @@ Thư mục gốc của thẻ SD sẽ chứa các file cấu hình và thư mục
 ├── learning/
 └── ...
 ```
+
 (Chi tiết các tệp được lược bỏ để cho ngắn gọn)
+
+# Mimi Firmware Build Environment
+
+## Overview
+
+This project provides the environment and instructions to build firmware for the Mimi device.
+
+## Prerequisites
+
+- Ubuntu 24.04.2 LTS (or compatible)
+- Docker (optional, for containerized builds)
+
+## Setup Build Environment
+
+Run the following script to install all required dependencies:
+
+```bash
+./setup_build_env.sh
+```
+
+## Build Firmware
+
+After setting up the environment, build the firmware with:
+
+```bash
+make
+```
+
+## Project Structure
+
+- `src/` - Source code for firmware
+- `Makefile` - Build instructions
+- `setup_build_env.sh` - Script to setup build environment
+- `blueprint.md` - System architecture and design
+- `todo.md` - Pending tasks and features
+
+## References
+
+See `blueprint.md` and `todo.md` for more details.

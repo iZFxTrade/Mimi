@@ -1,0 +1,15 @@
+{
+  "name": "MiMi Firmware",
+  "version": "1.0.0",
+  "builds": [
+    {
+      "chipFamily": "ESP32",
+      "parts": [
+        {
+          "path": "../firmware_builds/mimi-firmware.bin",
+          "offset": 0
+        }
+      ]
+    }
+  ]
+}

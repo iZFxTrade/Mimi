@@ -160,3 +160,14 @@ Lý do: Để đảm bảo luồng phát triển được tập trung, tránh ph
 ### Tóm tắt & Kết thúc phiên làm việc
 
 **Toàn bộ các mục tiêu cho phiên làm việc hôm nay đã hoàn thành.** Giao diện quản trị đã được nâng cấp lên một nền tảng vững chắc, linh hoạt và các lỗi phát sinh đã được khắc phục. Mọi thay đổi sẽ được lưu trữ an toàn trên Git.
+
+---
+
+# TODO
+
+- [ ] Implement UART driver
+- [ ] Add SPI communication
+- [ ] Write application main loop
+- [ ] Setup CI for firmware build
+- [ ] Add unit tests for drivers
+- [ ] Document flashing instructions
