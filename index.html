@@ -1,105 +1,169 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MiMi WebFlash - Nạp Firmware Trực Tuyến</title>
-  <style>
-    body { font-family: sans-serif; max-width: 800px; margin: auto; padding: 20px; line-height: 1.6; }
-    h1 { color: #333; }
-    .project-description { border-left: 4px solid #4CAF50; padding-left: 15px; margin-bottom: 30px; }
-    .flash-options { margin-top: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
-    label { display: block; margin-top: 10px; font-weight: bold; }
-    input[type="text"] { width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box; }
-    esp-web-install-button { margin-top: 20px; }
-  </style>
-  <script type="module" src="https://unpkg.com/esp-web-tools@9.0.2/dist/web/install-button.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MiMi AI Assistant - Nạp Firmware Trực Tuyến</title>
+    <style>
+        /* Thiết lập cơ bản */
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; line-height: 1.6; color: #333; }
+        h1, h2 { color: #007bff; border-bottom: 2px solid #eee; padding-bottom: 5px; margin-top: 25px; }
+        h1 { font-size: 2.5em; text-align: center; color: #4CAF50; border-bottom: none; }
+        .header-section { text-align: center; margin-bottom: 40px; }
+        .header-section p { font-size: 1.1em; color: #555; }
+        .cta-button { display: inline-block; padding: 12px 25px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; transition: background-color 0.3s; margin-top: 15px; }
+        .cta-button:hover { background-color: #0056b3; }
+        
+        /* Cấu trúc WebFlash */
+        .webflash-container { background-color: #f9f9f9; padding: 30px; border-radius: 8px; border: 1px solid #ddd; margin-top: 30px; }
+        .webflash-container h2 { color: #dc3545; border-bottom: 1px dashed #ccc; }
+        label { display: block; margin-top: 15px; font-weight: bold; color: #555; }
+        select, input[type="text"] { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        esp-web-install-button { display: block; margin-top: 30px; }
+        
+        /* Nút tùy chỉnh */
+        #install-button button { background-color: #4CAF50; color: white; border: none; padding: 15px 30px; border-radius: 5px; font-size: 1.1em; cursor: pointer; transition: background-color 0.3s; }
+        #install-button button:hover { background-color: #45a049; }
+        
+        /* Danh sách tính năng */
+        .features-list { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .features-list li { background: #e9ecef; padding: 15px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .features-list li strong { color: #007bff; display: block; margin-bottom: 5px; }
+
+    </style>
+    <script type="module" src="https://unpkg.com/esp-web-tools@9.0.2/dist/web/install-button.js"></script>
 </head>
 <body>
-  <h1>MiMi WebFlash - Công cụ Nạp Firmware Trực Tuyến</h1>
 
-  <div class="project-description">
-    <p><strong>MiMi</strong> là một dự án mã nguồn mở nhằm cung cấp các giải pháp tự động hóa và điều khiển thông minh dựa trên ESP32/ESP8266. Công cụ **WebFlash** này cho phép bạn dễ dàng nạp firmware tùy chỉnh trực tiếp qua trình duyệt mà không cần cài đặt thêm phần mềm nào.</p>
-    <p>Firmware chính thức được lấy từ repository: 
-       <a href="https://github.com/iZFxTrade/Mimi" target="_blank">iZFxTrade/Mimi</a>.
-    </p>
-  </div>
+    <header class="header-section">
+        <h1 style="color: #4CAF50;">🤖 MiMi AI Assistant</h1>
+        <p>MiMi là một **trợ lý AI mã nguồn mở** được thiết kế để tự động hóa các tác vụ phức tạp, đặc biệt trong lĩnh vực giao dịch và điều khiển thiết bị thông minh (IoT) dựa trên ESP32/ESP8266.</p>
+        <a href="https://github.com/iZFxTrade/Mimi" target="_blank" class="cta-button">Xem Mã Nguồn trên GitHub</a>
+    </header>
 
-  <div class="flash-options">
-    <h2>Cấu hình Nạp Firmware</h2>
+    <hr>
 
-    <label for="board-select">1. Chọn Loại Board Mạch:</label>
-    <select id="board-select">
-      <option value="esp32-cyd">ESP32-CYD (Mặc định)</option>
-      <option value="esp32-s2">ESP32-S2</option>
-      <option value="esp8266">ESP8266 (Generic)</option>
-      <option value="other">Board Khác...</option>
-    </select>
-    
-    <label for="firmware-url">2. Dán URL Firmware (bin/uf2) Tùy Chỉnh:</label>
-    <input type="text" id="firmware-url" placeholder="Để trống để sử dụng firmware mặc định của MiMi">
-    
-    <esp-web-install-button id="install-button" manifest="./manifest.json">
-      <button slot="activate">Chọn Cổng & Bắt đầu Nạp Firmware</button>
-      <span slot="unsupported">Trình duyệt của bạn không hỗ trợ nạp firmware trực tuyến. Vui lòng sử dụng Chrome hoặc Edge.</span>
-      <span slot="progress">Đang nạp...</span>
-      <span slot="installed">Đã nạp thành công!</span>
-    </esp-web-install-button>
+    <section>
+        <h2>✨ Tính Năng Nổi Bật (Từ README)</h2>
+        <ul class="features-list">
+            <li><strong>Giao dịch Tự động:</strong> Tích hợp các thuật toán giao dịch tiên tiến và quản lý rủi ro.</li>
+            <li><strong>Điều khiển Thiết bị IoT:</strong> Tương tác và quản lý các board mạch ESP32/ESP8266.</li>
+            <li><strong>Cộng đồng & Mở rộng:</strong> Thiết kế mã nguồn mở, dễ dàng tùy chỉnh và tích hợp các công cụ bên ngoài (qua MCP).</li>
+        </ul>
+    </section>
 
-    <p style="margin-top: 20px;">* Lưu ý: Hãy đảm bảo đã cài đặt driver CP210x hoặc CH340 nếu thiết bị không được nhận diện.</p>
-  </div>
-  
-  <script>
-    const installButton = document.getElementById('install-button');
-    const firmwareUrlInput = document.getElementById('firmware-url');
-    const boardSelect = document.getElementById('board-select');
+    <hr>
 
-    // Chức năng cập nhật manifest URL dựa trên input của người dùng
-    function updateManifest() {
-      const customUrl = firmwareUrlInput.value.trim();
-      const board = boardSelect.value;
-      
-      // Nếu người dùng dán URL tùy chỉnh, sử dụng manifest động
-      if (customUrl) {
-        // Tạo manifest tạm thời để hỗ trợ nạp 1 file bin/uf2 duy nhất
-        // Lưu ý: esp-web-tools thường cần một file manifest để khởi tạo.
-        // Đây là một cách giải quyết để sử dụng custom URL.
-        const dynamicManifest = {
-            name: "Custom Firmware",
-            version: "1.0.0",
-            home_assistant_domain: board, // Dùng board type làm domain
-            funding_url: "https://github.com/iZFxTrade/Mimi",
-            new_install_prompt_or_modal: true,
-            builds: [{
-                chipFamily: board.includes('esp32') ? 'ESP32' : 'ESP8266', // Phân loại chip cơ bản
-                parts: [{ 
-                    path: customUrl,
-                    offset: 0 
-                }]
-            }]
-        };
+    <div class="webflash-container">
+        <h2>⚡ MiMi WebFlash - Công cụ Nạp Firmware Trực Tuyến</h2>
+        <p>Sử dụng công cụ này để nạp firmware cho board mạch MiMi của bạn trực tiếp từ trình duyệt web. **Không cần cài đặt phần mềm bên ngoài!**</p>
         
-        // Sử dụng blob URL để truyền manifest động
-        const manifestBlob = new Blob([JSON.stringify(dynamicManifest)], {type: 'application/json'});
-        installButton.manifest = URL.createObjectURL(manifestBlob);
+        <div id="rom-selection">
+            <label for="rom-select">1. Chọn Phiên bản Firmware MiMi:</label>
+            <select id="rom-select">
+                <option value="" disabled selected>-- Chọn loại board/firmware --</option>
+            </select>
 
-      } else {
-        // Nếu không có URL tùy chỉnh, sử dụng manifest tĩnh cho MiMi
-        // Bạn sẽ cần tạo các manifest khác nhau (ví dụ: manifest-cyd.json)
-        // và chuyển logic chọn manifest vào đây. Để đơn giản, ta dùng manifest.json mặc định.
-        installButton.manifest = `./manifest.json`; 
-      }
-      
-      console.log('Manifest URL updated to:', installButton.manifest);
-    }
+            <label for="firmware-url" style="margin-top: 20px;">HOẶC 2. Dán URL Manifest Tùy Chỉnh:</label>
+            <input type="text" id="firmware-url" placeholder="Dán URL Manifest (.json) từ nguồn khác (Ví dụ: https://example.com/custom.json)">
+        </div>
 
-    // Lắng nghe sự kiện thay đổi trên cả input và select
-    firmwareUrlInput.addEventListener('input', updateManifest);
-    boardSelect.addEventListener('change', updateManifest);
-    
-    // Khởi tạo manifest khi tải trang
-    updateManifest(); 
+        <esp-web-install-button id="install-button" manifest="">
+            <button slot="activate">Chọn Cổng USB & Nạp Firmware</button>
+            <span slot="unsupported">Trình duyệt không hỗ trợ. Vui lòng dùng Chrome/Edge.</span>
+            <span slot="progress">Đang kết nối và nạp firmware...</span>
+            <span slot="installed">✅ Đã nạp thành công!</span>
+        </esp-web-install-button>
 
-  </script>
+        <p style="margin-top: 30px; font-size: 0.9em; color: #666;">* Lưu ý quan trọng: Vui lòng chọn Firmware ở bước 1 hoặc dán URL Manifest ở bước 2.</p>
+    </div>
+
+    <hr>
+
+    <footer>
+        <p style="text-align: center; font-size: 0.9em; margin-top: 20px;">&copy; 2025 iZFxTrade - Dự án MiMi. | Powered by ESP Web Tools.</p>
+    </footer>
+
+    <script>
+        const installButton = document.getElementById('install-button');
+        const firmwareUrlInput = document.getElementById('firmware-url');
+        const romSelect = document.getElementById('rom-select');
+
+        // *******************************************************************
+        // DỮ LIỆU DANH SÁCH FIRMWARE ĐÃ ĐƯỢC TÍCH HỢP TRỰC TIẾP
+        // *******************************************************************
+        const FIRMWARE_LIST = [
+            {
+                "board": "ESP32-CYD (Stable)",
+                "version": "1.0.0",
+                "manifest_url": "./manifest-cyd.json" 
+            },
+            {
+                "board": "ESP32 DevKit (Latest)",
+                "version": "2.0.0",
+                "manifest_url": "./manifest-devkit.json"
+            },
+            {
+                "board": "ESP8266 (Generic)",
+                "version": "1.0.0",
+                "manifest_url": "./manifest-esp8266.json"
+            }
+            // Thêm các phiên bản khác vào đây
+        ];
+        
+        const DEFAULT_MANIFEST_URL = './manifest-cyd.json'; // URL manifest mặc định ban đầu
+
+        /**
+         * 1. Điền danh sách ROM vào dropdown
+         */
+        function populateFirmwareList() {
+            // Đặt manifest mặc định khi khởi tạo
+            installButton.manifest = DEFAULT_MANIFEST_URL;
+            
+            // Xóa nội dung mặc định và điền dữ liệu
+            romSelect.innerHTML = '<option value="" disabled selected>-- Chọn loại board/firmware --</option>'; 
+            
+            FIRMWARE_LIST.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.manifest_url; 
+                option.textContent = `${item.board} - v${item.version}`;
+                romSelect.appendChild(option);
+            });
+        }
+
+        /**
+         * 2. Chức năng cập nhật Manifest cho Nút Flash
+         */
+        function updateManifest() {
+            const customUrl = firmwareUrlInput.value.trim();
+            const selectedRomUrl = romSelect.value;
+            
+            // Ưu tiên URL tùy chỉnh nếu có và là .json
+            if (customUrl && customUrl.endsWith('.json')) {
+                installButton.manifest = customUrl;
+                romSelect.value = ""; // Xóa lựa chọn từ dropdown
+
+            } 
+            // Nếu chọn ROM từ danh sách
+            else if (selectedRomUrl) {
+                installButton.manifest = selectedRomUrl;
+                firmwareUrlInput.value = ""; // Xóa input tùy chỉnh
+
+            } else {
+                // Quay về manifest mặc định nếu không có gì được chọn
+                installButton.manifest = DEFAULT_MANIFEST_URL;
+            }
+            
+            console.log('Manifest URL updated to:', installButton.manifest);
+        }
+
+        // Lắng nghe sự kiện
+        firmwareUrlInput.addEventListener('input', updateManifest);
+        romSelect.addEventListener('change', updateManifest);
+        
+        // Khởi tạo
+        populateFirmwareList();
+        updateManifest(); 
+    </script>
 </body>
 </html>
