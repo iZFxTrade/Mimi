@@ -19,6 +19,8 @@ _REPO_ROOT = _FIRMWARE_ROOT.parent
 _ROM_DIR = (_REPO_ROOT / "Rom").resolve()
 
 _IDF_CMD_CACHE: list[str] | None = None
+_IDF_CMD_SOURCE: str | None = None
+_IDF_PYTHON: str | None = None
 
 
 ################################################################################
@@ -60,10 +62,60 @@ def get_project_name() -> Optional[str]:
     return None
 
 
+def _iter_python_candidates(root: Path) -> list[Path]:
+    if root.is_file():
+        return [root]
+
+    candidates: list[Path] = []
+    if sys.platform == "win32":
+        candidates.append(root / "Scripts" / "python.exe")
+    else:
+        candidates.append(root / "bin" / "python")
+    return candidates
+
+
+def _detect_idf_python() -> Optional[str]:
+    """Thử tìm Python virtualenv mà ESP-IDF đã cài đặt."""
+
+    search_roots: list[Path] = []
+    env_path = os.environ.get("IDF_PYTHON_ENV_PATH")
+    if env_path:
+        search_roots.append(Path(env_path))
+
+    tools_path = os.environ.get("IDF_TOOLS_PATH")
+    if tools_path:
+        python_env_root = Path(tools_path) / "python_env"
+        if python_env_root.exists():
+            for entry in sorted(python_env_root.iterdir(), reverse=True):
+                search_roots.append(entry)
+
+    repo_python_env = _REPO_ROOT / ".espressif" / "python_env"
+    if repo_python_env.exists():
+        for entry in sorted(repo_python_env.iterdir(), reverse=True):
+            search_roots.append(entry)
+
+    home_python_env = Path.home() / ".espressif" / "python_env"
+    if home_python_env.exists():
+        for entry in sorted(home_python_env.iterdir(), reverse=True):
+            search_roots.append(entry)
+
+    seen: set[Path] = set()
+    for root in search_roots:
+        for candidate in _iter_python_candidates(root):
+            resolved = candidate.resolve()
+            if resolved in seen:
+                continue
+            seen.add(resolved)
+            if resolved.exists():
+                return str(resolved)
+
+    return None
+
+
 def _resolve_idf_command() -> list[str]:
     """Tìm lệnh idf.py khả dụng và lưu vào bộ nhớ đệm."""
 
-    global _IDF_CMD_CACHE
+    global _IDF_CMD_CACHE, _IDF_CMD_SOURCE, _IDF_PYTHON
     if _IDF_CMD_CACHE is not None:
         return list(_IDF_CMD_CACHE)
 
@@ -71,6 +123,8 @@ def _resolve_idf_command() -> list[str]:
     idf_from_path = shutil.which("idf.py")
     if idf_from_path:
         _IDF_CMD_CACHE = [idf_from_path]
+        _IDF_CMD_SOURCE = idf_from_path
+        _IDF_PYTHON = None
         return list(_IDF_CMD_CACHE)
 
     # 2. Kiểm tra biến môi trường chỉ định rõ đường dẫn
@@ -86,9 +140,14 @@ def _resolve_idf_command() -> list[str]:
 
     candidates.append((_REPO_ROOT / "esp-idf" / "tools" / "idf.py").resolve())
 
+    detected_python = _detect_idf_python()
+
     for candidate in candidates:
         if candidate.exists():
-            _IDF_CMD_CACHE = [sys.executable, str(candidate)]
+            python_exe = detected_python or sys.executable
+            _IDF_CMD_CACHE = [python_exe, str(candidate)]
+            _IDF_CMD_SOURCE = str(candidate)
+            _IDF_PYTHON = python_exe
             return list(_IDF_CMD_CACHE)
 
     raise FileNotFoundError(
@@ -136,7 +195,16 @@ def _ensure_idf_tools() -> None:
         if len(cmd) == 1:
             print(f"Sử dụng idf.py từ PATH: {cmd[0]}")
         else:
-            print(f"Sử dụng idf.py tại: {cmd[-1]}")
+            idf_path = _IDF_CMD_SOURCE or cmd[-1]
+            print(f"Sử dụng idf.py tại: {idf_path}")
+            if _IDF_PYTHON and Path(_IDF_PYTHON).exists():
+                if Path(_IDF_PYTHON).resolve() == Path(sys.executable).resolve():
+                    print(
+                        "Sử dụng Python hiện tại: {}. Khuyến nghị chạy export.sh của ESP-IDF để"
+                        " kích hoạt virtualenv nếu gặp lỗi thiếu module.".format(_IDF_PYTHON)
+                    )
+                else:
+                    print(f"Sử dụng Python môi trường ESP-IDF: {_IDF_PYTHON}")
 
 
 def zip_bin(name: str, version: str) -> Path:
