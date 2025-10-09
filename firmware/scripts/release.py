@@ -279,6 +279,7 @@ def _find_board_config(board_type: str) -> Optional[str]:
 
 
 def _chip_family_from_target(target: str) -> str:
+    normalized = target.lower().replace("-", "")
     mapping = {
         "esp32": "ESP32",
         "esp32s2": "ESP32-S2",
@@ -289,7 +290,7 @@ def _chip_family_from_target(target: str) -> str:
         "esp32h2": "ESP32-H2",
         "esp32p4": "ESP32-P4",
     }
-    return mapping.get(target.lower(), target.upper())
+    return mapping.get(normalized, target.upper())
 
 
 @contextmanager
