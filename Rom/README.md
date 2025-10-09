@@ -28,3 +28,20 @@ Sau khi build, `release.py` sẽ tự động đồng bộ `webflasher/roms.json
 5. Từ thư mục gốc repo, chạy `python3 firmware/scripts/release.py <board>` với `<board>` là một trong các bảng được hỗ trợ trong `firmware/main/Kconfig.projbuild`.
 
 Script sẽ build firmware, thu thập các tệp nhị phân và metadata rồi sao chép vào `Rom/<tên-build>/`. Nếu công cụ không tìm thấy `idf.py`, kiểm tra lại các biến môi trường ở bước 2.
+
+### Ví dụ trên GitHub Codespaces / GitHub Workspace
+
+Trong trường hợp bạn sử dụng môi trường đám mây của GitHub (Codespaces hoặc Dev Container), bạn có thể chạy tuần tự các lệnh sau ngay trong terminal của workspace:
+
+```sh
+# Cài đặt ESP-IDF và toolchain (chỉ cần thực hiện một lần)
+./setup_build_env.sh
+
+# Kích hoạt ESP-IDF cho phiên làm việc hiện tại
+source /workspaces/Mimi/esp-idf/export.sh
+
+# Biên dịch firmware và thu thập ROM cho một bo mạch cụ thể
+python3 firmware/scripts/release.py <board>
+```
+
+Lưu ý: script `setup_build_env.sh` cần quyền `sudo` để cài đặt các gói hệ thống trên runner Ubuntu mặc định của GitHub. Sau khi build thành công, các ROM sẽ xuất hiện trong `Rom/` và webflasher sẽ được đồng bộ metadata tự động.

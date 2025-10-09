@@ -29,7 +29,8 @@ firmware/
 1.  **Cài đặt Môi trường**: Bạn cần cài đặt và cấu hình môi trường phát triển ESP-IDF theo hướng dẫn của Espressif. Có thể sử dụng
     script `./setup_build_env.sh` để cài đặt nhanh (yêu cầu Internet và quyền sudo) hoặc tự cài đặt theo tài liệu chính thức. Nếu chưa thêm
     `idf.py` vào `PATH`, có thể chỉ định trực tiếp đường dẫn bằng biến môi trường `IDF_PY_PATH` hoặc `IDF_PATH`. Tập lệnh
-    `scripts/release.py` sẽ tự động dò tìm trong các biến này cũng như thư mục `esp-idf/tools/idf.py` đặt cạnh repo.
+    `scripts/release.py` sẽ tự động dò tìm trong các biến này cũng như thư mục `esp-idf/tools/idf.py` đặt cạnh repo. Trên GitHub Codespaces/
+    GitHub Workspace, `setup_build_env.sh` cài ESP-IDF vào `/workspaces/Mimi/esp-idf`; hãy `source` tệp `export.sh` trong thư mục này trước khi build.
 
 2.  **Chọn Bo mạch và Biên dịch**: Hệ thống xây dựng sử dụng CMake. Để biên dịch cho một bo mạch cụ thể, bạn cần chỉ định tên bo mạch đó. Ví dụ, để xây dựng cho `esp-box-3`:
 
