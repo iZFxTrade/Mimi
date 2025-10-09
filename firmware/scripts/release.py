@@ -1,9 +1,12 @@
+from __future__ import annotations
+
 import sys
 import os
 import json
 import zipfile
 import argparse
 import shutil
+import subprocess
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Optional
@@ -14,6 +17,8 @@ _FIRMWARE_ROOT = Path.cwd().resolve()
 _REPO_ROOT = _FIRMWARE_ROOT.parent
 
 _ROM_DIR = (_REPO_ROOT / "Rom").resolve()
+
+_IDF_CMD_CACHE: list[str] | None = None
 
 
 ################################################################################
@@ -55,20 +60,81 @@ def get_project_name() -> Optional[str]:
     return None
 
 
-def merge_bin() -> None:
-    if os.system("idf.py merge-bin") != 0:
-        print("merge-bin không thành công", file=sys.stderr)
+def _resolve_idf_command() -> list[str]:
+    """Tìm lệnh idf.py khả dụng và lưu vào bộ nhớ đệm."""
+
+    global _IDF_CMD_CACHE
+    if _IDF_CMD_CACHE is not None:
+        return list(_IDF_CMD_CACHE)
+
+    # 1. Ưu tiên PATH hiện tại
+    idf_from_path = shutil.which("idf.py")
+    if idf_from_path:
+        _IDF_CMD_CACHE = [idf_from_path]
+        return list(_IDF_CMD_CACHE)
+
+    # 2. Kiểm tra biến môi trường chỉ định rõ đường dẫn
+    env_path = os.environ.get("IDF_PY_PATH")
+    candidates: list[Path] = []
+    if env_path:
+        candidates.append(Path(env_path))
+
+    # 3. Kiểm tra IDF_PATH và esp-idf nội bộ của repo
+    idf_root_env = os.environ.get("IDF_PATH")
+    if idf_root_env:
+        candidates.append(Path(idf_root_env) / "tools" / "idf.py")
+
+    candidates.append((_REPO_ROOT / "esp-idf" / "tools" / "idf.py").resolve())
+
+    for candidate in candidates:
+        if candidate.exists():
+            _IDF_CMD_CACHE = [sys.executable, str(candidate)]
+            return list(_IDF_CMD_CACHE)
+
+    raise FileNotFoundError(
+        "Không tìm thấy idf.py trong PATH, IDF_PY_PATH, IDF_PATH hoặc thư mục esp-idf của dự án."
+    )
+
+
+def _run_idf_command(*args: str, error_hint: str | None = None) -> None:
+    """Chạy idf.py với các tham số được cung cấp."""
+
+    try:
+        base_cmd = _resolve_idf_command()
+    except FileNotFoundError as exc:
+        print(f"[LỖI] {exc}", file=sys.stderr)
         sys.exit(1)
+
+    cmd = [*base_cmd, *args]
+    result = subprocess.run(cmd)
+    if result.returncode != 0:
+        joined = " ".join(args)
+        if error_hint:
+            print(error_hint, file=sys.stderr)
+        print(f"idf.py {joined} không thành công", file=sys.stderr)
+        sys.exit(result.returncode)
+
+
+def merge_bin() -> None:
+    _run_idf_command("merge-bin", error_hint="merge-bin không thành công")
 
 
 def _ensure_idf_tools() -> None:
     """Đảm bảo `idf.py` sẵn sàng trước khi chạy các lệnh ESP-IDF"""
-    if shutil.which("idf.py") is None:
+
+    try:
+        cmd = _resolve_idf_command()
+    except FileNotFoundError as exc:
         print(
-            "[LỖI] Không tìm thấy lệnh idf.py. Vui lòng cài đặt ESP-IDF và thiết lập môi trường trước khi build.",
+            f"[LỖI] {exc}. Hãy chạy export.sh của ESP-IDF hoặc chỉ định IDF_PY_PATH.",
             file=sys.stderr,
         )
         sys.exit(1)
+    else:
+        if len(cmd) == 1:
+            print(f"Sử dụng idf.py từ PATH: {cmd[0]}")
+        else:
+            print(f"Sử dụng idf.py tại: {cmd[-1]}")
 
 
 def zip_bin(name: str, version: str) -> Path:
@@ -382,15 +448,15 @@ def release(board_type: str, config_filename: str = "config.json", *, filter_nam
         os.environ.pop("IDF_TARGET", None)
 
         # Gọi set-target
-        if os.system(f"idf.py set-target {target}") != 0:
-            print("set-target không thành công", file=sys.stderr)
-            sys.exit(1)
+        _run_idf_command("set-target", target, error_hint="set-target không thành công")
 
         with _temporary_sdkconfig(board_root, sdkconfig_files, sdkconfig_append):
             # Xây dựng với macro BOARD_NAME được định nghĩa thành name
-            if os.system(f"idf.py -DBOARD_NAME={name} build") != 0:
-                print("xây dựng không thành công")
-                sys.exit(1)
+            _run_idf_command(
+                f"-DBOARD_NAME={name}",
+                "build",
+                error_hint="xây dựng không thành công",
+            )
 
             # merge-bin
             merge_bin()

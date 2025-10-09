@@ -26,7 +26,9 @@ firmware/
 
 ## Luồng công việc & Xây dựng
 
-1.  **Cài đặt Môi trường**: Bạn cần cài đặt và cấu hình môi trường phát triển ESP-IDF theo hướng dẫn của Espressif.
+1.  **Cài đặt Môi trường**: Bạn cần cài đặt và cấu hình môi trường phát triển ESP-IDF theo hướng dẫn của Espressif. Nếu chưa thêm
+    `idf.py` vào `PATH`, có thể chỉ định trực tiếp đường dẫn bằng biến môi trường `IDF_PY_PATH` hoặc `IDF_PATH`. Tập lệnh
+    `scripts/release.py` sẽ tự động dò tìm trong các biến này cũng như thư mục `esp-idf/tools/idf.py` đặt cạnh repo.
 
 2.  **Chọn Bo mạch và Biên dịch**: Hệ thống xây dựng sử dụng CMake. Để biên dịch cho một bo mạch cụ thể, bạn cần chỉ định tên bo mạch đó. Ví dụ, để xây dựng cho `esp-box-3`:
 
