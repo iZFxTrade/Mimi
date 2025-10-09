@@ -1,14 +1,457 @@
 choice BOARD_TYPE
     prompt "Board Type"
-    default BOARD_TYPE_MIMI_CYD
+    default BOARD_TYPE_MIMI_CYD if IDF_TARGET_ESP32
+    default BOARD_TYPE_ESP_BOX_3 if IDF_TARGET_ESP32S3
+    default BOARD_TYPE_SURFER_C3_1_14TFT if IDF_TARGET_ESP32C3
+    default BOARD_TYPE_ESP32C6_LCD_1_69 if IDF_TARGET_ESP32C6
+    default BOARD_TYPE_ESP32P4_NANO if IDF_TARGET_ESP32P4
     help
         Select the hardware variant that this firmware is built for.
 
-config BOARD_TYPE_MIMI_CYD
-    bool "MiMi CYD (ESP32-2432S028R)"
+config BOARD_TYPE_BREAD_COMPACT_WIFI
+    bool "Bread Compact Wifi"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "bread-compact-wifi" hardware variant.
+
+config BOARD_TYPE_BREAD_COMPACT_ML307
+    bool "Bread Compact Ml307"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "bread-compact-ml307" hardware variant.
+
+config BOARD_TYPE_BREAD_COMPACT_ESP32
+    bool "Bread Compact ESP32"
     depends on IDF_TARGET_ESP32
     help
-        Configuration for the MiMi assistant based on the ESP32-CYD (Cheap Yellow Display).
+        Build firmware for the "bread-compact-esp32" hardware variant.
+
+config BOARD_TYPE_BREAD_COMPACT_ESP32_LCD
+    bool "Bread Compact ESP32 Lcd"
+    depends on IDF_TARGET_ESP32
+    help
+        Build firmware for the "bread-compact-esp32-lcd" hardware variant.
+
+config BOARD_TYPE_DF_K10
+    bool "Df K10"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "df-k10" hardware variant.
+
+config BOARD_TYPE_DF_S3_AI_CAM
+    bool "Df S3 Ai Cam"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "df-s3-ai-cam" hardware variant.
+
+config BOARD_TYPE_ESP_BOX_3
+    bool "ESP Box 3"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "esp-box-3" hardware variant.
+
+config BOARD_TYPE_ESP_BOX
+    bool "ESP Box"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "esp-box" hardware variant.
+
+config BOARD_TYPE_ESP_BOX_LITE
+    bool "ESP Box Lite"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "esp-box-lite" hardware variant.
+
+config BOARD_TYPE_KEVIN_BOX_1
+    bool "Kevin Box 1"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "kevin-box-1" hardware variant.
+
+config BOARD_TYPE_KEVIN_BOX_2
+    bool "Kevin Box 2"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "kevin-box-2" hardware variant.
+
+config BOARD_TYPE_KEVIN_C3
+    bool "Kevin C3"
+    depends on IDF_TARGET_ESP32C3
+    help
+        Build firmware for the "kevin-c3" hardware variant.
+
+config BOARD_TYPE_KEVIN_SP_V3_DEV
+    bool "Kevin Sp V3 Dev"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "kevin-sp-v3-dev" hardware variant.
+
+config BOARD_TYPE_KEVIN_SP_V4_DEV
+    bool "Kevin Sp V4 Dev"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "kevin-sp-v4-dev" hardware variant.
+
+config BOARD_TYPE_KEVIN_YUYING_313LCD
+    bool "Kevin Yuying 313lcd"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "kevin-yuying-313lcd" hardware variant.
+
+config BOARD_TYPE_LICHUANG_DEV
+    bool "Lichuang Dev"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "lichuang-dev" hardware variant.
+
+config BOARD_TYPE_LICHUANG_C3_DEV
+    bool "Lichuang C3 Dev"
+    depends on IDF_TARGET_ESP32C3
+    help
+        Build firmware for the "lichuang-c3-dev" hardware variant.
+
+config BOARD_TYPE_MAGICLICK_2P4
+    bool "Magiclick 2p4"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "magiclick-2p4" hardware variant.
+
+config BOARD_TYPE_MAGICLICK_2P5
+    bool "Magiclick 2p5"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "magiclick-2p5" hardware variant.
+
+config BOARD_TYPE_MAGICLICK_C3
+    bool "Magiclick C3"
+    depends on IDF_TARGET_ESP32C3
+    help
+        Build firmware for the "magiclick-c3" hardware variant.
+
+config BOARD_TYPE_MAGICLICK_C3_V2
+    bool "Magiclick C3 V2"
+    depends on IDF_TARGET_ESP32C3
+    help
+        Build firmware for the "magiclick-c3-v2" hardware variant.
+
+config BOARD_TYPE_MIMI_CYD
+    bool "Mimi Cyd"
+    depends on IDF_TARGET_ESP32
+    help
+        Build firmware for the "mimi-cyd" hardware variant.
+
+config BOARD_TYPE_M5STACK_CORE_S3
+    bool "M5stack Core S3"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "m5stack-core-s3" hardware variant.
+
+config BOARD_TYPE_M5STACK_CORE_TAB5
+    bool "M5stack Tab5"
+    depends on IDF_TARGET_ESP32P4
+    help
+        Build firmware for the "m5stack-tab5" hardware variant.
+
+config BOARD_TYPE_ATOMS3_ECHO_BASE
+    bool "Atoms3 Echo Base"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "atoms3-echo-base" hardware variant.
+
+config BOARD_TYPE_ATOMS3R_ECHO_BASE
+    bool "Atoms3r Echo Base"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "atoms3r-echo-base" hardware variant.
+
+config BOARD_TYPE_ATOMS3R_CAM_M12_ECHO_BASE
+    bool "Atoms3r Cam M12 Echo Base"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "atoms3r-cam-m12-echo-base" hardware variant.
+
+config BOARD_TYPE_ATOM_ECHOS3R
+    bool "Atom Echos3r"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "atom-echos3r" hardware variant.
+
+config BOARD_TYPE_ATOMMATRIX_ECHO_BASE
+    bool "Atommatrix Echo Base"
+    depends on IDF_TARGET_ESP32
+    help
+        Build firmware for the "atommatrix-echo-base" hardware variant.
+
+config BOARD_TYPE_XMINI_C3_V3
+    bool "Xmini C3 V3"
+    depends on IDF_TARGET_ESP32C3
+    help
+        Build firmware for the "xmini-c3-v3" hardware variant.
+
+config BOARD_TYPE_XMINI_C3_4G
+    bool "Xmini C3 4g"
+    depends on IDF_TARGET_ESP32C3
+    help
+        Build firmware for the "xmini-c3-4g" hardware variant.
+
+config BOARD_TYPE_XMINI_C3
+    bool "Xmini C3"
+    depends on IDF_TARGET_ESP32C3
+    help
+        Build firmware for the "xmini-c3" hardware variant.
+
+config BOARD_TYPE_ESP32S3_KORVO2_V3
+    bool "ESP32S3 Korvo2 V3"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "esp32s3-korvo2-v3" hardware variant.
+
+config BOARD_TYPE_ESP_SPARKBOT
+    bool "ESP Sparkbot"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "esp-sparkbot" hardware variant.
+
+config BOARD_TYPE_ESP_SPOT_S3
+    bool "ESP Spot S3"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "esp-spot-s3" hardware variant.
+
+config BOARD_TYPE_ESP_HI
+    bool "ESP Hi"
+    depends on IDF_TARGET_ESP32C3
+    help
+        Build firmware for the "esp-hi" hardware variant.
+
+config BOARD_TYPE_ECHOEAR
+    bool "Echoear"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "echoear" hardware variant.
+
+config BOARD_TYPE_ESP32S3_AUDIO_BOARD
+    bool "Waveshare S3 Audio Board"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "waveshare-s3-audio-board" hardware variant.
+
+config BOARD_TYPE_ESP32C6_LCD_1_69
+    bool "Waveshare C6 Lcd 1 69"
+    depends on IDF_TARGET_ESP32C6
+    help
+        Build firmware for the "waveshare-c6-lcd-1.69" hardware variant.
+
+config BOARD_TYPE_ESP32P4_NANO
+    bool "Waveshare P4 Nano"
+    depends on IDF_TARGET_ESP32P4
+    help
+        Build firmware for the "waveshare-p4-nano" hardware variant.
+
+config BOARD_TYPE_BREAD_COMPACT_WIFI_LCD
+    bool "Bread Compact Wifi Lcd"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "bread-compact-wifi-lcd" hardware variant.
+
+config BOARD_TYPE_TUDOUZI
+    bool "Tudouzi"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "tudouzi" hardware variant.
+
+config BOARD_TYPE_LILYGO_T_CIRCLE_S3
+    bool "Lilygo T Circle S3"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "lilygo-t-circle-s3" hardware variant.
+
+config BOARD_TYPE_LILYGO_T_CAMERAPLUS_S3_V1_0_V1_1
+    bool "Lilygo T Cameraplus S3"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "lilygo-t-cameraplus-s3" hardware variant.
+
+config BOARD_TYPE_LILYGO_T_DISPLAY_S3_PRO_MVSRLORA
+    bool "Lilygo T Display S3 Pro Mvsrlora"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "lilygo-t-display-s3-pro-mvsrlora" hardware
+        variant.
+
+config BOARD_TYPE_MOVECALL_MOJI_ESP32S3
+    bool "Movecall Moji ESP32S3"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "movecall-moji-esp32s3" hardware variant.
+
+config BOARD_TYPE_MOVECALL_CUICAN_ESP32S3
+    bool "Movecall Cuican ESP32S3"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "movecall-cuican-esp32s3" hardware variant.
+
+config BOARD_TYPE_ATK_DNESP32S3
+    bool "Atk Dnesp32s3"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "atk-dnesp32s3" hardware variant.
+
+config BOARD_TYPE_ATK_DNESP32S3_BOX
+    bool "Atk Dnesp32s3 Box"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "atk-dnesp32s3-box" hardware variant.
+
+config BOARD_TYPE_ATK_DNESP32S3_BOX0
+    bool "Atk Dnesp32s3 Box0"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "atk-dnesp32s3-box0" hardware variant.
+
+config BOARD_TYPE_ATK_DNESP32S3_BOX2_WIFI
+    bool "Atk Dnesp32s3 Box2 Wifi"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "atk-dnesp32s3-box2-wifi" hardware variant.
+
+config BOARD_TYPE_ATK_DNESP32S3_BOX2_4G
+    bool "Atk Dnesp32s3 Box2 4g"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "atk-dnesp32s3-box2-4g" hardware variant.
+
+config BOARD_TYPE_ATK_DNESP32S3M_WIFI
+    bool "Atk Dnesp32s3m Wifi"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "atk-dnesp32s3m-wifi" hardware variant.
+
+config BOARD_TYPE_ATK_DNESP32S3M_4G
+    bool "Atk Dnesp32s3m 4g"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "atk-dnesp32s3m-4g" hardware variant.
+
+config BOARD_TYPE_DU_CHATX
+    bool "Du Chatx"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "du-chatx" hardware variant.
+
+config BOARD_TYPE_SENSECAP_WATCHER
+    bool "Sensecap Watcher"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "sensecap-watcher" hardware variant.
+
+config BOARD_TYPE_DOIT_S3_AIBOX
+    bool "Doit S3 Aibox"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "doit-s3-aibox" hardware variant.
+
+config BOARD_TYPE_MIXGO_NOVA
+    bool "Mixgo Nova"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "mixgo-nova" hardware variant.
+
+config BOARD_TYPE_GENJUTECH_S3_1_54TFT
+    bool "Genjutech S3 1 54tft"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "genjutech-s3-1.54tft" hardware variant.
+
+config BOARD_TYPE_ESP32_CGC
+    bool "ESP32 Cgc"
+    depends on IDF_TARGET_ESP32
+    help
+        Build firmware for the "esp32-cgc" hardware variant.
+
+config BOARD_TYPE_ESP32_CGC_144
+    bool "ESP32 Cgc 144"
+    depends on IDF_TARGET_ESP32
+    help
+        Build firmware for the "esp32-cgc-144" hardware variant.
+
+config BOARD_TYPE_ZHENGCHEN_1_54TFT_WIFI
+    bool "Zhengchen 1 54tft Wifi"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "zhengchen-1.54tft-wifi" hardware variant.
+
+config BOARD_TYPE_MINSI_K08_DUAL
+    bool "Minsi K08 Dual"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "minsi-k08-dual" hardware variant.
+
+config BOARD_TYPE_ZHENGCHEN_1_54TFT_ML307
+    bool "Zhengchen 1 54tft Ml307"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "zhengchen-1.54tft-ml307" hardware variant.
+
+config BOARD_TYPE_ESP32_S3_1_54_MUMA
+    bool "Sp ESP32 S3 1 54 Muma"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "sp-esp32-s3-1.54-muma" hardware variant.
+
+config BOARD_TYPE_ESP32_S3_1_28_BOX
+    bool "Sp ESP32 S3 1 28 Box"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "sp-esp32-s3-1.28-box" hardware variant.
+
+config BOARD_TYPE_OTTO_ROBOT
+    bool "Otto Robot"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "otto-robot" hardware variant.
+
+config BOARD_TYPE_ELECTRON_BOT
+    bool "Electron Bot"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "electron-bot" hardware variant.
+
+config BOARD_TYPE_BREAD_COMPACT_WIFI_CAM
+    bool "Bread Compact Wifi S3cam"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "bread-compact-wifi-s3cam" hardware variant.
+
+config BOARD_TYPE_JIUCHUAN
+    bool "Jiuchuan S3"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "jiuchuan-s3" hardware variant.
+
+config BOARD_TYPE_LABPLUS_MPYTHON_V3
+    bool "Labplus Mpython V3"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "labplus-mpython-v3" hardware variant.
+
+config BOARD_TYPE_LABPLUS_LEDONG_V2
+    bool "Labplus Ledong V2"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "labplus-ledong-v2" hardware variant.
+
+config BOARD_TYPE_SURFER_C3_1_14TFT
+    bool "Surfer C3 1 14tft"
+    depends on IDF_TARGET_ESP32C3
+    help
+        Build firmware for the "surfer-c3-1.14tft" hardware variant.
+
+config BOARD_TYPE_YUNLIAO_S3
+    bool "Yunliao S3"
+    depends on IDF_TARGET_ESP32S3
+    help
+        Build firmware for the "yunliao-s3" hardware variant.
 
 endchoice
 

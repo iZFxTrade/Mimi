@@ -151,6 +151,7 @@ def _chip_family_from_target(target: str) -> str:
         "esp32c3": "ESP32-C3",
         "esp32c6": "ESP32-C6",
         "esp32h2": "ESP32-H2",
+        "esp32p4": "ESP32-P4",
     }
     return mapping.get(target.lower(), target.upper())
 
