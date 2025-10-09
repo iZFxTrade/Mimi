@@ -1,6 +1,6 @@
 {
   "name": "MiMi ESP32-CYD Firmware",
-  "version": "1.0.0",
+  "version": "2.0.3",
   "home_assistant_domain": "esp32-cyd",
   "funding_url": "https://github.com/iZFxTrade/Mimi",
   "new_install_prompt_or_modal": true,
@@ -9,15 +9,15 @@
       "chipFamily": "ESP32",
       "parts": [
         {
-          "path": "https://github.com/iZFxTrade/Mimi/raw/main/firmware_builds/mimi-bootloader.bin", 
-          "offset": 4096 
+          "path": "./Rom/mimi-cyd/bootloader.bin",
+          "offset": 4096
         },
         {
-          "path": "https://github.com/iZFxTrade/Mimi/raw/main/firmware_builds/mimi-partitions.bin",
+          "path": "./Rom/mimi-cyd/partitions.bin",
           "offset": 32768
         },
         {
-          "path": "https://github.com/iZFxTrade/Mimi/raw/main/firmware_builds/mimi-app.bin",
+          "path": "./Rom/mimi-cyd/app.bin",
           "offset": 65536
         }
       

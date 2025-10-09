@@ -20,7 +20,8 @@
         label { display: block; margin-top: 15px; font-weight: bold; color: #555; }
         select, input[type="text"] { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
         esp-web-install-button { display: block; margin-top: 30px; }
-        
+        .rom-description { margin-top: 10px; color: #444; font-size: 0.95em; min-height: 1.2em; }
+
         /* Nút tùy chỉnh */
         #install-button button { background-color: #4CAF50; color: white; border: none; padding: 15px 30px; border-radius: 5px; font-size: 1.1em; cursor: pointer; transition: background-color 0.3s; }
         #install-button button:hover { background-color: #45a049; }
@@ -63,6 +64,7 @@
             <select id="rom-select">
                 <option value="" disabled selected>-- Chọn loại board/firmware --</option>
             </select>
+            <p id="rom-description" class="rom-description"></p>
 
             <label for="firmware-url" style="margin-top: 20px;">HOẶC 2. Dán URL Manifest Tùy Chỉnh:</label>
             <input type="text" id="firmware-url" placeholder="Dán URL Manifest (.json) từ nguồn khác (Ví dụ: https://example.com/custom.json)">
@@ -88,82 +90,103 @@
         const installButton = document.getElementById('install-button');
         const firmwareUrlInput = document.getElementById('firmware-url');
         const romSelect = document.getElementById('rom-select');
+        const romDescription = document.getElementById('rom-description');
 
-        // *******************************************************************
-        // DỮ LIỆU DANH SÁCH FIRMWARE ĐÃ ĐƯỢC TÍCH HỢP TRỰC TIẾP
-        // *******************************************************************
-        const FIRMWARE_LIST = [
-            {
-                "board": "ESP32-CYD (Stable)",
-                "version": "1.0.0",
-                "manifest_url": "./manifest-cyd.json" 
-            },
-            {
-                "board": "ESP32 DevKit (Latest)",
-                "version": "2.0.0",
-                "manifest_url": "./manifest-devkit.json"
-            },
-            {
-                "board": "ESP8266 (Generic)",
-                "version": "1.0.0",
-                "manifest_url": "./manifest-esp8266.json"
+        let firmwareList = [];
+        let defaultManifestUrl = '';
+        const firmwareMeta = new Map();
+
+        async function populateFirmwareList() {
+            romSelect.innerHTML = '<option value="" disabled selected>-- Chọn loại board/firmware --</option>';
+            firmwareMeta.clear();
+
+            try {
+                const response = await fetch('./webflasher/roms.json', { cache: 'no-store' });
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                const data = await response.json();
+                firmwareList = Array.isArray(data) ? data : [];
+            } catch (error) {
+                console.error('Không thể tải danh sách firmware:', error);
+                firmwareList = [];
+                installButton.manifest = '';
+                defaultManifestUrl = '';
+                if (romDescription) {
+                    romDescription.textContent = 'Không thể tải danh sách ROM. Vui lòng kiểm tra lại cấu hình.';
+                }
+                return;
             }
-            // Thêm các phiên bản khác vào đây
-        ];
-        
-        const DEFAULT_MANIFEST_URL = './manifest-cyd.json'; // URL manifest mặc định ban đầu
 
-        /**
-         * 1. Điền danh sách ROM vào dropdown
-         */
-        function populateFirmwareList() {
-            // Đặt manifest mặc định khi khởi tạo
-            installButton.manifest = DEFAULT_MANIFEST_URL;
-            
-            // Xóa nội dung mặc định và điền dữ liệu
-            romSelect.innerHTML = '<option value="" disabled selected>-- Chọn loại board/firmware --</option>'; 
-            
-            FIRMWARE_LIST.forEach(item => {
+            if (firmwareList.length === 0) {
+                installButton.manifest = '';
+                defaultManifestUrl = '';
+                if (romDescription) {
+                    romDescription.textContent = 'Chưa có ROM nào được công bố.';
+                }
+                return;
+            }
+
+            defaultManifestUrl = firmwareList[0].manifest || '';
+            if (defaultManifestUrl) {
+                installButton.manifest = defaultManifestUrl;
+            }
+
+            firmwareList.forEach(item => {
+                firmwareMeta.set(item.manifest, item);
                 const option = document.createElement('option');
-                option.value = item.manifest_url; 
+                option.value = item.manifest;
                 option.textContent = `${item.board} - v${item.version}`;
                 romSelect.appendChild(option);
             });
+
+            if (romDescription && defaultManifestUrl) {
+                const meta = firmwareMeta.get(defaultManifestUrl);
+                romDescription.textContent = meta?.description || '';
+            }
         }
 
-        /**
-         * 2. Chức năng cập nhật Manifest cho Nút Flash
-         */
+        function setDescription(manifestUrl, isCustom = false) {
+            if (!romDescription) {
+                return;
+            }
+            if (isCustom) {
+                romDescription.textContent = manifestUrl ? 'Đang sử dụng manifest tùy chỉnh.' : '';
+                return;
+            }
+            const meta = firmwareMeta.get(manifestUrl);
+            romDescription.textContent = meta?.description || '';
+        }
+
         function updateManifest() {
             const customUrl = firmwareUrlInput.value.trim();
             const selectedRomUrl = romSelect.value;
-            
-            // Ưu tiên URL tùy chỉnh nếu có và là .json
+
             if (customUrl && customUrl.endsWith('.json')) {
                 installButton.manifest = customUrl;
-                romSelect.value = ""; // Xóa lựa chọn từ dropdown
-
-            } 
-            // Nếu chọn ROM từ danh sách
-            else if (selectedRomUrl) {
+                romSelect.value = '';
+                setDescription(customUrl, true);
+            } else if (selectedRomUrl) {
                 installButton.manifest = selectedRomUrl;
-                firmwareUrlInput.value = ""; // Xóa input tùy chỉnh
-
+                firmwareUrlInput.value = '';
+                setDescription(selectedRomUrl);
+            } else if (defaultManifestUrl) {
+                installButton.manifest = defaultManifestUrl;
+                setDescription(defaultManifestUrl);
             } else {
-                // Quay về manifest mặc định nếu không có gì được chọn
-                installButton.manifest = DEFAULT_MANIFEST_URL;
+                installButton.manifest = '';
+                setDescription('');
             }
-            
+
             console.log('Manifest URL updated to:', installButton.manifest);
         }
 
-        // Lắng nghe sự kiện
         firmwareUrlInput.addEventListener('input', updateManifest);
         romSelect.addEventListener('change', updateManifest);
-        
-        // Khởi tạo
-        populateFirmwareList();
-        updateManifest(); 
+
+        populateFirmwareList().then(() => {
+            updateManifest();
+        });
     </script>
 </body>
 </html>

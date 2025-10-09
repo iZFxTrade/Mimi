@@ -1,0 +1,11 @@
+{
+    "target": "esp32p4",
+    "builds": [
+        {
+            "name": "waveshare-p4-wifi6-touch-lcd-xc",
+            "sdkconfig_append": [
+                "CONFIG_LCD_TYPE_800_800_3_4_INCH=y"
+            ]
+        }
+    ]
+}

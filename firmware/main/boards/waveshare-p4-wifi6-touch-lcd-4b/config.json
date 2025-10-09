@@ -1,0 +1,9 @@
+{
+    "target": "esp32p4",
+    "builds": [
+        {
+            "name": "waveshare-p4-wifi6-touch-lcd-4b",
+            "sdkconfig_append": []
+        }
+    ]
+}

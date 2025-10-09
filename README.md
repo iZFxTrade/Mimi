@@ -26,6 +26,38 @@
 
 Để đưa MiMi vào cuộc sống trên thiết bị ESP32-CYD của bạn, hãy làm theo các bước dưới đây.
 
+## 🔄 Quy trình cập nhật mã nguồn lên GitHub
+
+Sau khi hoàn thành các bước phát triển hoặc build ROM, bạn cần tự đẩy (push) thay đổi lên kho GitHub của mình. Máy chủ build không thể thực hiện thao tác này thay bạn, vì vậy hãy chắc chắn rằng máy trạm đã được cấu hình quyền truy cập SSH/HTTPS hợp lệ.
+
+1. **Kiểm tra những tệp đã sửa:**
+   ```bash
+   git status
+   ```
+2. **Thêm thay đổi vào commit:**
+   ```bash
+   git add <tệp hoặc thư mục>
+   ```
+3. **Tạo commit mô tả rõ ràng:**
+   ```bash
+   git commit -m "feat: mô tả ngắn gọn nội dung thay đổi"
+   ```
+4. **Đảm bảo bạn đang ở đúng nhánh từ xa:**
+   ```bash
+   git branch -vv
+   ```
+5. **(Tuỳ chọn) Khai báo remote nếu chưa có:**
+   ```bash
+   git remote add origin git@github.com:<tài-khoản>/<tên-kho>.git
+   git remote -v  # xác nhận lại URL
+   ```
+6. **Đẩy thay đổi lên GitHub:**
+   ```bash
+   git push -u origin <tên-nhánh>
+   ```
+
+> 💡 Nếu gặp lỗi xác thực, hãy cấu hình lại token/SSH key và thử lại. Trong trường hợp Git báo "No configured push destination", hãy dùng bước 5 để thêm remote rồi chạy lại `git push`.
+
 ### Phương pháp 1: Sử dụng WebFlasher (Đơn giản nhất)
 
 > Truy cập link để sử dụng.
