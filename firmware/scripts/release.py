@@ -93,6 +93,7 @@ def _resolve_idf_command() -> list[str]:
 
     raise FileNotFoundError(
         "Không tìm thấy idf.py trong PATH, IDF_PY_PATH, IDF_PATH hoặc thư mục esp-idf của dự án."
+        " Hãy chạy script setup_build_env.sh để tải ESP-IDF hoặc tự cấu hình thủ công."
     )
 
 
@@ -126,7 +127,8 @@ def _ensure_idf_tools() -> None:
         cmd = _resolve_idf_command()
     except FileNotFoundError as exc:
         print(
-            f"[LỖI] {exc}. Hãy chạy export.sh của ESP-IDF hoặc chỉ định IDF_PY_PATH.",
+            f"[LỖI] {exc}. Hãy chạy export.sh của ESP-IDF hoặc chỉ định IDF_PY_PATH. "
+            "Có thể sử dụng ./setup_build_env.sh để cài đặt nhanh ESP-IDF trong môi trường phát triển.",
             file=sys.stderr,
         )
         sys.exit(1)
