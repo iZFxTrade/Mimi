@@ -1,6 +1,7 @@
 # Thư mục Rom
 
-Các gói firmware sau khi chạy `python3 firmware/scripts/release.py <board>` sẽ được sao chép vào đây theo dạng `Rom/<tên-build>/`. Mỗi thư mục con chứa tối thiểu các thành phần:
+Các gói firmware sau khi chạy `python3 firmware/scripts/release.py <board>` sẽ được sao chép vào đây theo dạng `Rom/<tên-build>/`.
+Mỗi thư mục con chứa tối thiểu các thành phần:
 
 - `bootloader.bin`
 - `partitions.bin`
@@ -10,3 +11,18 @@ Các gói firmware sau khi chạy `python3 firmware/scripts/release.py <board>` 
 - `metadata.json`: Thông tin mô tả (tên hiển thị, phiên bản, mô tả) dùng để tạo `webflasher/roms.json`
 
 Sau khi build, `release.py` sẽ tự động đồng bộ `webflasher/roms.json` dựa trên các tệp `metadata.json`, vì vậy chỉ cần deploy thư mục `Rom/` lên webflasher là danh sách firmware sẽ được cập nhật.
+
+## Hướng dẫn build firmware
+
+Để tự tạo các bản ROM và đồng bộ vào thư mục này, cần chuẩn bị môi trường ESP-IDF đầy đủ:
+
+1. Cài đặt ESP-IDF 5.x theo hướng dẫn chính thức từ Espressif.
+2. Đảm bảo có thể gọi `idf.py` từ terminal bằng một trong các cách sau:
+   - Thêm ESP-IDF vào biến môi trường `PATH`.
+   - Xuất biến `IDF_PY_PATH` trỏ tới tệp `idf.py`.
+   - Xuất biến `IDF_PATH` trỏ tới thư mục gốc ESP-IDF.
+   - Đặt thư mục `esp-idf/` bên cạnh repo (ví dụ `Mimi/esp-idf`).
+3. Kích hoạt môi trường ESP-IDF bằng cách chạy script `export.sh` của ESP-IDF (ví dụ: `. $IDF_PATH/export.sh`).
+4. Từ thư mục gốc repo, chạy `python3 firmware/scripts/release.py <board>` với `<board>` là một trong các bảng được hỗ trợ trong `firmware/main/Kconfig.projbuild`.
+
+Script sẽ build firmware, thu thập các tệp nhị phân và metadata rồi sao chép vào `Rom/<tên-build>/`. Nếu công cụ không tìm thấy `idf.py`, kiểm tra lại các biến môi trường ở bước 2.
