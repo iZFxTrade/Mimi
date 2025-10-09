@@ -1,3 +1,17 @@
+choice BOARD_TYPE
+    prompt "Board Type"
+    default BOARD_TYPE_MIMI_CYD
+    help
+        Select the hardware variant that this firmware is built for.
+
+config BOARD_TYPE_MIMI_CYD
+    bool "MiMi CYD (ESP32-2432S028R)"
+    depends on IDF_TARGET_ESP32
+    help
+        Configuration for the MiMi assistant based on the ESP32-CYD (Cheap Yellow Display).
+
+endchoice
+
 config OTA_URL
     string "Firmware update URL"
     default "https://mimi.izfx-trade.workers.dev/"

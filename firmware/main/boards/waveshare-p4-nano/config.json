@@ -1,0 +1,17 @@
+{
+    "target": "esp32p4",
+    "builds": [
+        {
+            "name": "waveshare-p4-nano",
+            "sdkconfig_append": [
+                "CONFIG_LCD_TYPE_800_1280_10_1_INCH=y"
+            ]
+        },
+        {
+            "name": "waveshare-p4-nano-10p1a",
+            "sdkconfig_append": [
+                "CONFIG_LCD_TYPE_800_1280_10_1_INCH_A=y"
+            ]
+        }
+    ]
+}

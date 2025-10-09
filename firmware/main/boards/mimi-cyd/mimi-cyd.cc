@@ -99,3 +99,6 @@ void board_register_mimi_cyd() {
     Board::Register(&board);
     printf("Board '%s' registered\n", board.GetName());
 }
+
+// Register MiMi CYD as the default board implementation when this target is selected.
+DECLARE_BOARD(MimiCydBoard);
